@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Park City</title>
+  <meta name="referrer" content="same-origin">
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript">
+    //<![CDATA[
+    ! function() {
+      var n, o = 0,
+        e = function() {
+          window.history.replaceState({}, "Park City", "/"), a(), n.onopen = function() {
+            window.clearInterval(o), o = 0
+          }, n.onclose = function() {
+            t()
+          }, n.onmessage = function(n) {
+            parseFloat(n.data) > parseFloat("575374389.968157") && document.location.reload()
+          }, n.onerror = function() {
+            t()
+          }
+        },
+        t = function() {
+          o || (o = setInterval(function() {
+            n.close(), e()
+          }, 500))
+        },
+        a = function() {
+          clearInterval(o), o = 0;
+          var e = window.location,
+            a = "ws://" + e.hostname + (e.port ? ":" + e.port : "") + "/ws";
+          n = new WebSocket(a), t()
+        };
+      window.addEventListener("load", e, !1)
+    }();
+    //]]>
+  </script>
+  <meta name="viewport" content="width=960">
+  <style>
+    @font-face {
+      font-family: "Istok Web";
+      src: url('css/IstokWeb-Regular.woff2') format('woff2'), url('css/IstokWeb-Regular.woff') format('woff');
+      font-weight: 400
+    }
+
+    @font-face {
+      font-family: "Muli";
+      src: url('css/Muli-Regular.woff2') format('woff2'), url('css/Muli-Regular.woff') format('woff');
+      font-weight: 400
+    }
+
+    body,
+    div {
+      font-size: 0
+    }
+
+    p,
+    span,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 0;
+      word-spacing: normal;
+      word-wrap: break-word;
+      -ms-word-wrap: break-word;
+      pointer-events: auto
+    }
+
+    sup {
+      font-size: inherit;
+      vertical-align: baseline;
+      position: relative;
+      top: -0.4em
+    }
+
+    sub {
+      font-size: inherit;
+      vertical-align: baseline;
+      position: relative;
+      top: 0.4em
+    }
+
+    ul {
+      display: block;
+      word-spacing: normal;
+      word-wrap: break-word;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      -moz-padding-start: 0;
+      -khtml-padding-start: 0;
+      -webkit-padding-start: 0;
+      -o-padding-start: 0;
+      -padding-start: 0;
+      -webkit-margin-before: 0;
+      -webkit-margin-after: 0
+    }
+
+    li {
+      display: block
+    }
+
+    li p {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: : none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none
+    }
+
+    form {
+      display: inline-block
+    }
+
+    a {
+      text-decoration: inherit;
+      color: inherit;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+    }
+
+    textarea {
+      resize: none
+    }
+
+    .shm-l {
+      float: left;
+      clear: left
+    }
+
+    .shm-r {
+      float: right;
+      clear: right
+    }
+
+    .whitespacefix {
+      word-spacing: -1px
+    }
+
+    video:not(#vbk):not(.videoinline) {
+      width: 100%;
+      max-width: 900px
+    }
+
+    video:-webkit-full-screen {
+      max-width: 100% !important
+    }
+
+    video:-moz-full-screen {
+      max-width: 100% !important
+    }
+
+    video:-ms-fullscreen {
+      max-width: 100% !important
+    }
+
+    video:fullscreen {
+      max-width: 100% !important
+    }
+
+    .player1.fullscreen1-active video {
+      max-width: 100% !important
+    }
+
+    html {
+      font-family: sans-serif;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      margin: 0
+    }
+
+    audio,
+    video {
+      display: inline-block;
+      vertical-align: baseline
+    }
+
+    audio:not([controls]) {
+      display: none;
+      height: 0
+    }
+
+    [hidden],
+    template {
+      display: none
+    }
+
+    a {
+      background: 0 0
+    }
+
+    a:active,
+    a:hover {
+      outline: 0
+    }
+
+    b,
+    strong {
+      font-weight: 700
+    }
+
+    dfn {
+      font-style: italic
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1em;
+      line-height: 1;
+      margin: 0em 0
+    }
+
+    img {
+      border: 0
+    }
+
+    svg:not(:root) {
+      overflow: hidden
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+      margin: 0
+    }
+
+    button {
+      overflow: visible
+    }
+
+    button,
+    select {
+      text-transform: none
+    }
+
+    button,
+    html input[type=button],
+    input[type=submit] {
+      -webkit-appearance: button;
+      cursor: pointer;
+      box-sizing: border-box;
+      white-space: normal
+    }
+
+    input[type=text],
+    input[type=password],
+    textarea {
+      -webkit-appearance: none;
+      appearance: none;
+      box-sizing: border-box
+    }
+
+    button[disabled],
+    html input[disabled] {
+      cursor: default
+    }
+
+    button::-moz-focus-inner,
+    input::-moz-focus-inner {
+      border: 0;
+      padding: 0
+    }
+
+    input {
+      line-height: normal
+    }
+
+    input[type=checkbox],
+    input[type=radio] {
+      box-sizing: border-box;
+      padding: 0
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      height: auto
+    }
+
+    input[type=search] {
+      -webkit-appearance: textfield;
+      -moz-box-sizing: content-box;
+      -webkit-box-sizing: content-box;
+      box-sizing: content-box
+    }
+
+    input[type=search]::-webkit-search-cancel-button,
+    input[type=search]::-webkit-search-decoration {
+      -webkit-appearance: none
+    }
+
+    textarea {
+      overflow: auto;
+      box-sizing: border-box;
+      border-color: #ddd
+    }
+
+    optgroup {
+      font-weight: 700
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0
+    }
+
+    td,
+    th {
+      padding: 0
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .slick-slider {
+      position: relative;
+      display: block;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-touch-action: pan-y;
+      touch-action: pan-y;
+      -ms-touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .slick-list {
+      position: relative;
+      overflow: hidden;
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    .slick-list:focus {
+      outline: none;
+    }
+
+    .slick-loading .slick-list {
+      background: white url("css/ajax-loader.gif") center center no-repeat;
+    }
+
+    .slick-list.dragging {
+      cursor: pointer;
+      cursor: hand;
+    }
+
+    .slick-slider .slick-list,
+    .slick-track,
+    .slick-slide,
+    .slick-slide img {
+      -webkit-transform: translate(0, 0);
+      -moz-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+      -o-transform: translate(0, 0);
+      transform: translate(0, 0);
+    }
+
+    .slick-track {
+      position: relative;
+      left: 0;
+      top: 0;
+      display: block;
+      zoom: 1;
+    }
+
+    .slick-track:before,
+    .slick-track:after {
+      content: "";
+      display: table;
+    }
+
+    .slick-track:after {
+      clear: both;
+    }
+
+    .slick-loading .slick-track {
+      visibility: hidden;
+    }
+
+    .slick-slide {
+      float: left;
+      height: 100%;
+      min-height: 1px;
+      display: none;
+    }
+
+    .slick-slide img {
+      display: block;
+    }
+
+    .slick-slide.slick-loading img {
+      display: none;
+    }
+
+    .slick-slide.dragging img {
+      pointer-events: none;
+    }
+
+    .slick-initialized .slick-slide {
+      display: block;
+      visibility: visible !important;
+    }
+
+    .slick-loading .slick-slide {
+      visibility: hidden;
+    }
+
+    .slick-vertical .slick-slide {
+      display: block;
+      height: auto;
+      border: 1px solid transparent;
+    }
+
+    @font-face {
+      font-family: "slick";
+      src: url("css/slick.eot");
+      src: url("css/slick.eot?#iefix") format("embedded-opentype"), url("css/slick.woff") format("woff"), url("css/slick.ttf") format("truetype"), url("css/slick.svg#slick") format("svg");
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .slick-prev:before {
+      content: "\2190";
+    }
+
+    .slick-next:before {
+      content: "\2192";
+    }
+
+    .slick-prev,
+    .slick-next {
+      position: absolute;
+      display: block;
+      line-height: 0;
+      font-size: 0;
+      cursor: pointer;
+      background: transparent;
+      color: transparent;
+      top: 50%;
+      padding: 0;
+      border: none;
+      outline: none;
+      visibility: visible !important;
+    }
+
+    .slick-prev:hover,
+    .slick-prev:focus,
+    .slick-next:hover,
+    .slick-next:focus {
+      outline: none;
+      background: transparent;
+      color: transparent;
+    }
+
+    .slick-prev:hover:before,
+    .slick-prev:focus:before,
+    .slick-next:hover:before,
+    .slick-next:focus:before {
+      opacity: 1;
+    }
+
+    .slick-prev.slick-disabled:before,
+    .slick-next.slick-disabled:before {
+      opacity: 0.25;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+      font-family: "slick";
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .slick-dots {
+      position: absolute;
+      list-style: none;
+      display: block;
+      text-align: center;
+      padding: 0;
+      width: 100%;
+      visibility: visible;
+    }
+
+    .slick-dots li {
+      position: relative;
+      display: inline-block;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .slick-dots li button:hover,
+    .slick-dots li button:focus {
+      outline: none;
+    }
+
+    .slick-dots li button:hover:before,
+    .slick-dots li button:focus:before {
+      opacity: 1;
+    }
+
+    .slick-dots li button {
+      border: 0;
+      background: transparent;
+      display: block;
+      outline: none;
+      line-height: 0;
+      font-size: 0;
+      color: transparent;
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .slick-dots li button:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      content: "\2022";
+      font-family: "slick";
+      text-align: center;
+      color: black;
+      opacity: 0.25;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    [dir="rtl"] .slick-slide {
+      float: right;
+    }
+
+    [dir="rtl"] .slick-next:before {
+      content: "\2190";
+    }
+
+    [dir="rtl"] .slick-prev:before {
+      content: "\2192";
+    }
+
+    .slider img {
+      width: 50%;
+    }
+
+    #b {
+      background-color: #a0c9e3
+    }
+
+    .ps28 {
+      position: relative;
+      margin-top: 18px
+    }
+
+    .v28 {
+      display: block;
+      *display: block;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .s28 {
+      pointer-events: none;
+      min-width: 960px;
+      width: 960px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .v29 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .ps29 {
+      position: relative;
+      margin-left: 56px;
+      margin-top: 0
+    }
+
+    .s29 {
+      min-width: 849px;
+      width: 849px;
+      min-height: 348px;
+      height: 348px
+    }
+
+    .c22 {
+      pointer-events: auto
+    }
+
+    .i {
+      position: absolute;
+      left: 0;
+      width: 849px;
+      height: 348px;
+      top: 0;
+      border: 0
+    }
+
+    .i2 {
+      left: 0;
+      width: 849px;
+      height: 348px;
+      top: 0;
+      display: inline-block
+    }
+
+    .v30 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .ps30 {
+      position: relative;
+      margin-top: 22px
+    }
+
+    .s30 {
+      width: 100%;
+      min-width: 960px;
+      min-height: 51px
+    }
+
+    .c23 {
+      z-index: 1;
+      pointer-events: none;
+      border: 0;
+      background-color: #52646f
+    }
+
+    .v31 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .ps31 {
+      position: relative;
+      margin-top: 0
+    }
+
+    .s31 {
+      width: 100%;
+      min-width: 960px;
+      min-height: 6px;
+      height: 6px
+    }
+
+    .c24 {
+      z-index: 7;
+      border: 0;
+      background-color: #ddedf7
+    }
+
+    .ps32 {
+      position: relative;
+      margin-top: -44px
+    }
+
+    .v32 {
+      display: block;
+      *display: block;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .s32 {
+      pointer-events: none;
+      min-width: 960px;
+      width: 960px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .v33 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top;
+      overflow: hidden
+    }
+
+    .ps33 {
+      position: relative;
+      margin-left: 0;
+      margin-top: 0
+    }
+
+    .s33 {
+      min-width: 960px;
+      width: 960px;
+      min-height: 57px;
+      height: 57px
+    }
+
+    .c25 {
+      z-index: 10;
+      pointer-events: auto
+    }
+
+    .p8 {
+      padding-top: 0;
+      text-indent: 0;
+      padding-bottom: 0;
+      padding-right: 0;
+      text-align: center
+    }
+
+    .f8 {
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 30px;
+      font-weight: 400;
+      font-style: normal;
+      text-decoration: none;
+      text-transform: uppercase;
+      color: #1c0505;
+      background-color: initial;
+      line-height: 36px;
+      letter-spacing: 16.00px;
+      text-shadow: 3px 6px 5px #808080
+    }
+
+    .v34 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .ps34 {
+      position: relative;
+      margin-top: -19px
+    }
+
+    .s34 {
+      width: 100%;
+      min-width: 960px;
+      min-height: 6px;
+      height: 6px
+    }
+
+    .c26 {
+      z-index: 14;
+      pointer-events: none;
+      border: 0;
+      background-color: #ddedf7
+    }
+
+    .ps35 {
+      position: relative;
+      margin-top: 87px
+    }
+
+    .v35 {
+      display: block;
+      *display: block;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .s35 {
+      pointer-events: none;
+      min-width: 960px;
+      width: 960px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .v36 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      vertical-align: top
+    }
+
+    .ps36 {
+      position: relative;
+      margin-left: 129px;
+      margin-top: 0
+    }
+
+    .s36 {
+      min-width: 720px;
+      width: 720px;
+      min-height: 559px
+    }
+
+    .c27 {
+      pointer-events: auto
+    }
+
+    .s37 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s38 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s39 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s40 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s41 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s42 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s43 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s44 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s45 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s46 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s47 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s48 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s49 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s50 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s51 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s52 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s53 {
+      display: inline-block;
+      height: 415px;
+      width: 100%
+    }
+
+    .s54 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s55 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s56 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s57 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s58 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s59 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s60 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s61 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s62 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s63 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s64 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s65 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s66 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s67 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s68 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s69 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .s70 {
+      display: inline-block;
+      width: 100%
+    }
+
+    .js2 .slider-for {
+      height: 415px
+    }
+
+    .js2 .slider-nav {
+      height: 124px
+    }
+
+    .js2 .slider-nav img {
+      width: 114px;
+      height: 114px
+    }
+
+    .js2 .slick-prev,
+    .js2 .slick-next {
+      height: 20px;
+      width: 20px;
+      margin-top: -10px;
+    }
+
+    .js2 .slick-prev:before,
+    .js2 .slick-next:before {
+      font-size: 20px;
+      color: #1c0505;
+      opacity: 0.75;
+    }
+
+    .js2 .slick-prev {
+      left: -39px;
+    }
+
+    .js2 .slick-next {
+      right: -39px;
+    }
+
+    .js2 .slider-for {
+      margin-bottom: 0px;
+    }
+
+    .js2 .slider-nav {
+      margin-bottom: 20px;
+      visibility: hidden;
+    }
+
+    .js2 .slider-nav img {
+      border: solid 5px transparent;
+    }
+
+    .js2 .slider-nav .slick-center img {
+      border-color: #9eafb9;
+    }
+
+    .js2 .slick-dots {
+      bottom: -435px;
+    }
+
+    .js2 .slick-dots li {
+      height: 20px;
+      width: 20px;
+      margin: 0 5px;
+    }
+
+    .js2 .slick-dots li button {
+      height: 20px;
+      width: 20px;
+    }
+
+    .js2 .slick-dots li button:before {
+      width: 20px;
+      height: 20px;
+      font-size: 6px;
+      line-height: 20px;
+    }
+
+    .js2 .slick-dots li.slick-active button:before {
+      color: #1c0505;
+      opacity: 0.75;
+    }
+
+    [dir="rtl"] .js2 .slick-next {
+      right: auto;
+      left: -39px;
+    }
+
+    [dir="rtl"] .js2 .slick-prev {
+      right: -39px;
+      left: auto;
+    }
+
+    .menu-device {
+      background-color: rgb(0, 0, 0);
+      display: none
+    }
+  </style>
+</head>
+
+<body id="b">
+  <base href="gallery.html">
+  <!--base href="/page/07955D76-7FBB-4C60-B892-C9A86B836A2E/"-->
+  <link rel="stylesheet" href="css/site.1.css" type="text/css">
+  <!--[if lte IE 7]>
+<link rel="stylesheet" href="css/site.0-lteIE7.css" type="text/css">
+<![endif]-->
+  <!--div id="trial-banner">
+        <a href="https://sparkleapp.com" target="_blank">Made with Sparkle</a>
+    </div-->
+  <div class="ps28 v28 s28">
+    <div class="v29 ps29 s29 c22">
+      <picture class="i2 js3">
+        <source data-srcset="images/ParkCityHome1.jpg 1x">
+        <img data-src="images/ParkCityHome1.jpg" alt="" class="js i">
+      </picture>
+    </div>
+  </div>
+  <div class="v30 ps30 s30 c23">
+    <div class="v31 ps31 s31 c24"></div>
+  </div>
+  <div class="ps32 v32 s32">
+    <div class="v33 ps33 s33 c25">
+      <h1 class="p8 f8">GALLERY</h1>
+    </div>
+  </div>
+  <div class="v34 ps34 s34 c26"></div>
+  <div class="ps35 v35 s35">
+    <div class="js2 v36 ps36 s36 c27 ga">
+      <div class="slider slider-nav">
+        <div>
+          <picture class="s54">
+            <source srcset="images/thumb-pic-01.png 2x"><img class="slide0" src="images/thumb-pic-01.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s55">
+            <source data-srcset="images/thumb-pic-02.png 2x"><img class="slide1" data-src="images/thumb-pic-02.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s56">
+            <source data-srcset="images/thumb-pic-03.png 2x"><img class="slide1" data-src="images/thumb-pic-03.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s57">
+            <source data-srcset="images/thumb-pic-04.png 2x"><img class="slide1" data-src="images/thumb-pic-04.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s58">
+            <source data-srcset="images/thumb-pic-05.png 2x"><img class="slide1" data-src="images/thumb-pic-05.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s59">
+            <source data-srcset="images/thumb-pic-06.png 2x"><img class="slide1" data-src="images/thumb-pic-06.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s60">
+            <source data-srcset="images/thumb-pic-07.png 2x"><img class="slide1" data-src="images/thumb-pic-07.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s61">
+            <source data-srcset="images/thumb-pic-08.png 2x"><img class="slide1" data-src="images/thumb-pic-08.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s62">
+            <source data-srcset="images/thumb-pic-09.png 2x"><img class="slide1" data-src="images/thumb-pic-09.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s63">
+            <source data-srcset="images/thumb-pic-10.png 2x"><img class="slide1" data-src="images/thumb-pic-10.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s64">
+            <source data-srcset="images/thumb-pic-12.png 2x"><img class="slide1" data-src="images/thumb-pic-12.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s65">
+            <source data-srcset="images/thumb-pic-13.png 2x"><img class="slide1" data-src="images/thumb-pic-13.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s66">
+            <source data-srcset="images/thumb-pic-14.png 2x"><img class="slide1" data-src="images/thumb-pic-14.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s67">
+            <source data-srcset="images/thumb-pic-15.png 2x"><img class="slide1" data-src="images/thumb-pic-15.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s68">
+            <source data-srcset="images/thumb-pic-16.png 2x"><img class="slide1" data-src="images/thumb-pic-16.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s69">
+            <source data-srcset="images/thumb-pic-17.png 2x"><img class="slide1" data-src="images/thumb-pic-17.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s70">
+            <source data-srcset="images/thumb-pic-18.png 2x"><img class="slide1" data-src="images/thumb-pic-18.png">
+          </picture>
+        </div>
+      </div>
+      <div class="slider slider-for">
+        <div>
+          <picture class="s37">
+            <source srcset="images/pic-01.png 1x"><img class="slide0" src="images/pic-01.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s38">
+            <source data-srcset="images/pic-02.png 1x"><img class="slide1" data-src="images/pic-02.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s39">
+            <source data-srcset="images/pic-03.png 1x"><img class="slide1" data-src="images/pic-03.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s40">
+            <source data-srcset="images/pic-04.png 1x"><img class="slide1" data-src="images/pic-04.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s41">
+            <source data-srcset="images/pic-05.png 1x"><img class="slide1" data-src="images/pic-05.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s42">
+            <source data-srcset="images/pic-06.png 1x"><img class="slide1" data-src="images/pic-06.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s43">
+            <source data-srcset="images/pic-07.png 1x"><img class="slide1" data-src="images/pic-07.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s44">
+            <source data-srcset="images/pic-08.png 1x"><img class="slide1" data-src="images/pic-08.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s45">
+            <source data-srcset="images/pic-09.png 1x"><img class="slide1" data-src="images/pic-09.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s46">
+            <source data-srcset="images/pic-10.png 1x"><img class="slide1" data-src="images/pic-10.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s47">
+            <source data-srcset="images/pic-12.png 1x"><img class="slide1" data-src="images/pic-12.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s48">
+            <source data-srcset="images/pic-13.png 1x"><img class="slide1" data-src="images/pic-13.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s49">
+            <source data-srcset="images/pic-14.png 1x"><img class="slide1" data-src="images/pic-14.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s50">
+            <source data-srcset="images/pic-15.png 1x"><img class="slide1" data-src="images/pic-15.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s51">
+            <source data-srcset="images/pic-16.png 1x"><img class="slide1" data-src="images/pic-16.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s52">
+            <source data-srcset="images/pic-17.png 1x"><img class="slide1" data-src="images/pic-17.png">
+          </picture>
+        </div>
+        <div>
+          <picture class="s53">
+            <source data-srcset="images/pic-18.png 1x"><img class="slide1" data-src="images/pic-18.png">
+          </picture>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="v ps s c"></div>
+  <div class="v2 ps2 s2 c2">
+    <div class="ps3 v3 s3">
+      <div class="v4 ps4 s4 c3">
+        <ul class="menu-dropdown v5 ps5 s5 m" id="m1">
+          <li class="v6 ps6 s6 mit">
+            <a class="ml" href="index.html">
+              <div class="menu-content mcv">
+                <div class="v7 ps7 s7 c4">
+                  <div class="v8 ps8 s8 c5">
+                    <p class="p f">Home</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li class="v9 ps9 s9 mit2">
+            <a class="ml2" href="services.html">
+              <div class="menu-content mcv2">
+                <div class="v10 ps10 s10 c6">
+                  <div class="v11 ps11 s11 c7">
+                    <p class="p2 f2">Services</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li class="v12 ps12 s12 mit3">
+            <a class="ml3" href="contact_us.html">
+              <div class="menu-content mcv3">
+                <div class="v13 ps13 s13 c8">
+                  <div class="v14 ps14 s14 c9">
+                    <p class="p3 f3">Contact Us</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <a name="anchor1" class="v15 ps15 s15">
+      </a>
+      <div class="v16 ps16 s16 c10">
+        <div class="v17 ps17 s17 c11">
+          <div class="wrapper">
+            <a"><img src="https://www.freeiconspng.com/uploads/map-location-icon-29.png" width="20" alt="Map Location Icon" /></a>
+          </div>
+        </div>
+        <div class="v18 ps18 s18 c12">
+          <p class="p4 f4">#11-2 Jalan Radin Bangus 5, Sri Petaling</p>
+        </div>
+      </div>
+      <div class="v19 ps19 s19 c13">
+        <div class="v20 ps20 s20 c14">
+          <div class="wrapper2">
+            <img src="https://img.icons8.com/color/26/000000/facebook.png">
+          </div>
+        </div>
+        <div class="v21 ps21 s21 c15">
+          <p class="p5 f5">https://www.facebook.com/parkcitypetboarding</p>
+        </div>
+      </div>
+      <div class="v22 ps22 s22 c16">
+        <div class="v23 ps23 s23 c17">
+          <div class="wrapper3">
+            <a><img src="https://www.freeiconspng.com/uploads/icon-email-icon-clip-art-at-clker-com-vector-qafaq-e-mail-icon-trace--0.png" width="20" alt="icon email icon clip art at clker com vector qafaq e mail icon trace " /></a>
+          </div>
+        </div>
+        <div class="v24 ps24 s24 c18">
+          <p class="p6 f6">parkcitypetboarding@gmail.com</p>
+        </div>
+      </div>
+      <div class="v25 ps25 s25 c19">
+        <div class="v26 ps26 s26 c20">
+          <div class="wrapper4">
+            <a><img src="https://www.freeiconspng.com/uploads/telephone-icon-png-10.png" width="19" alt="Telephone Icon Png" /></a>
+          </div>
+        </div>
+        <div class="v27 ps27 s27 c21">
+          <p class="p7 f7">+1-23-456-7890</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="js/slick.js"></script>
+  <script type="text/javascript" src="js/jqueryui.js"></script>
+  <script type="text/javascript" src="js/menu.js"></script>
+  <script type="text/javascript" src="js/menu-dropdown-animations.min.js"></script>
+  <script type="text/javascript" src="js/menu-dropdown.0.js"></script>
+  <script type="text/javascript" src="js/unveil.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript">
+    var ver = RegExp(/Mozilla\/5\.0 \(Linux; .; Android ([\d.]+)/).exec(navigator.userAgent);
+    if (ver && parseFloat(ver[1]) < 5) {
+      document.getElementsByTagName('body')[0].className += ' whitespacefix';
+    }
+  </script>
+</body>
+
+</html>
