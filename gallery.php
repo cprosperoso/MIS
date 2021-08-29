@@ -1,3 +1,7 @@
+<?php
+if (!session_id()) session_start();
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -650,8 +654,8 @@
       *display: inline;
       zoom: 1;
       vertical-align: top;
-      overflow: hidden;
-      outline: 0
+      //overflow: hidden;
+      //outline: 0
     }
 
     .s173 {
@@ -720,6 +724,28 @@
       pointer-events: auto
     }
 
+    .btn15 {
+      border: 0;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
+      background-color: transparent;
+      background-clip: padding-box;
+      color: rgba(255, 255, 255, .71)
+    }
+
+    .btn15:hover {
+      background-color: rgba(211, 51, 130, .45);
+      border-color: #f30707;
+      color: rgba(255, 255, 255, .71)
+    }
+
+    .btn15:active {
+      background-color: transparent;
+      border-color: #f30707;
+      color: rgba(255, 255, 255, .71)
+    }
+
     .btn16 {
       border: 0;
       -webkit-border-radius: 0;
@@ -744,7 +770,7 @@
 
     .v17 {
       display: inline-block;
-      overflow: hidden;
+      //overflow: hidden;
       outline: 0
     }
 
@@ -2005,6 +2031,57 @@
         background-image: url(images/parkcityhome-981.webp)
       }
     }
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  color: black;
+  background-color: #CCCCFF;
+  min-width: 100px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,255,0.3);
+  z-index: 9999;
+}
+
+.dropdown-content a {
+  //float: none;
+  //padding: 12px 16px;
+  //text-decoration: none;
+  //display: block;
+  //text-align: left;
+  //float: left;
+  font-size: 16px;
+  color: black;
+  text-align: center;
+  padding:12px 16px;
+  text-decoration: none;
+  float: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #9966FF;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
   </style>
   <script>
     ! function() {
@@ -2034,10 +2111,31 @@
       <div class="s171">
         <div class="v14 ps158 s172 c144">
           <div class="v16 ps158 s173 c145">
-            <p class="f38">Login</p>
+            <!--p class="f38">Login</p-->
+<?php if(isset($_SESSION['username']) && ($_SESSION['username']=='admin')):?>
+<div class="dropdown">
+  <button class="f38 btn15 v17 s175"><?php echo $_SESSION['username'];?></button>
+  <div class="dropdown-content">
+    <a href="updatebooking.php">Update Booking</a>
+    <a href="updateroom.php">Update Room Status</a>
+    <a href="logout.php">Log out</a>
+  </div>
+</div>
+<?php elseif(isset($_SESSION['username'])):?>
+<div class="dropdown">
+  <button class="f38 btn15 v17 s175"><?php echo $_SESSION['username'];?></button>
+  <div class="dropdown-content">
+    <a href="#">Pet Profile</a>
+    <a href="#">History</a>
+    <a href="logout.php">Log out</a>
+  </div>
+</div>
+<?php else:?>
+<a href="signin.php" class="f38 btn15 v17 s175">Login</a>
+<?php endif;?>
           </div>
           <div class="v14 ps159 s174 c146">
-            <a href="./" class="f38 btn16 v17 s175">Gallery</a>
+            <a href="index.php" class="f38 btn16 v17 s175">Home</a>
           </div>
           <div class="v14 ps160 s176 c147">
             <a href="./#services" class="f38 btn17 v17 s177">Services</a>
@@ -2046,7 +2144,21 @@
             <a href="./#about-us" class="f38 btn18 v17 s175">About Us</a>
           </div>
           <div class="v14 ps162 s174 c149">
-            <a href="./#services" class="f38 btn19 v17 s175">Contact Us</a>
+            <!--a href="./#services" class="f38 btn19 v17 s175">Contact Us</a-->
+<?php if(isset($_SESSION['username']) && ($_SESSION['username']=='admin')):?>
+<!--a href="#" class="f38 btn19 v17 s175">Reports</a-->
+<div class="dropdown">
+<!--a href="#" class="f11 btn7 v8 s46">Reports</a-->
+ <button class="f38 btn19 v17 s175">Reports</button>
+ <div class="dropdown-content">
+   <a href=href=transact_report.php>Transactions</a>
+   <a href=active_users.php>Active Users</a>
+   <a href=room_report.php>Rooms</a>
+ </div>
+</div>
+<?php else:?>
+<a href="#contact-us" class="f38 btn19 v17 s175">Contact Us</a>
+<?php endif;?>
           </div>
         </div>
       </div>

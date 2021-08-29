@@ -1,155 +1,26 @@
 <?php
 if (!session_id()) session_start();
 
-$booking_num=rand_code(7);
+date_default_timezone_set("Asia/Hong_Kong");
+$nowDate = date("Y-m-d h:i:sa");
+//echo '<br>' . $nowDate;
+$start = '08:00:00';
+$end   = '19:00:00';
+$time = date("H:i", strtotime($nowDate));
+$now = date("Y-m-d");
 
-$checkin = $_SESSION['checkin'];      //boarding
-$checkout = $_SESSION['checkout'];    //boarding
-$checkin_g = $_SESSION['checkin_g'];  //grooming
-$checkin_tg = $_SESSION['checkin_tg'];//grooming
-$numroom = $_SESSION['numroom'];
-$petsize = $_SESSION['petsize'];
-$p_type = $_SESSION['p_type'];
-$srv_code = $_SESSION['srv_code'];
-$est_amount = $_SESSION['est_amount'];
-$username = $_SESSION['username'];
-
-//$booking_num1=$_POST['booking_num'];
-//$srv_code1=$_POST['srv_code'];
-/*print "check in: $checkin\n";
-print "check out: $checkout\n";
-print "checkin groom: $checkin_g\n";
-print "time groom: $checkin_tg\n";
-print "numroom: $numroom\n";
-print "petsize: $petsize\n";
-print "pettype: $p_type\n";
-print "srv_code: $srv_code\n";
-print "username: $username\n";
-print "booking: $booking_num\n";
-print "amount: $est_amount\n";*/
-
-//print "Here: $booking_num";
-//print "again: $srv_code";
-//computation
-/*$numOfDays = (strtotime($checkout) - strtotime($checkin)) / (60 * 60 * 24);
-switch (strtolower($petsize)){
-case "small":
-if($srv_code == "GRM")
-$est_amount = ($numroom*65 * $numOfDays);
-else
-$est_amount = 45*1;
-//print "<p><b> Est. Amount:</b> ".$est_amount."\n</p";
-break;
-case "medium":
-if($srv_code == "GRM")
-$est_amount = ($numroom*75 * $numOfDays);
-else
-$est_amount = 60*1;
-//print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
-break;
-default:
-if($srv_code == "GRM")
-$est_amount = ($numroom*85 * $numOfDays);
-else
-$est_amount = 65*1;
-//print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
-}
-
-print "amount: $est_amount\n";
-*/
-
-function rand_code($len)
-{
-   $min_lenght= 0;
-   $max_lenght = 100;
-   $bigL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   $smallL = "abcdefghijklmnopqrstuvwxyz";
-   $number = "0123456789";
-   $bigB = str_shuffle($bigL);
-   $smallS = str_shuffle($smallL);
-   $numberS = str_shuffle($number);
-   $subA = substr($bigB,0,5);
-   $subB = substr($bigB,6,5);
-   $subC = substr($bigB,10,5);
-   $subD = substr($smallS,0,5);
-   $subE = substr($smallS,6,5);
-   $subF = substr($smallS,10,5);
-   $subG = substr($numberS,0,5);
-   $subH = substr($numberS,6,5);
-   $subI = substr($numberS,10,5);
-   $RandCode1 = str_shuffle($subA.$subD.$subB.$subF.$subC.$subE);
-   $RandCode2 = str_shuffle($RandCode1);
-   $RandCode = $RandCode1.$RandCode2;
- if ($len>$min_lenght && $len<$max_lenght)
- {
-   $CodeEX = substr($RandCode,0,$len);
- }
- else
- {
-   $CodeEX = $RandCode;
- }
- return $CodeEX;
-}
+$booking_ref=$_POST['booking_ref'];
 
 $db = new SQLite3('park_city.db');
 
-//get user's email address
-$stmt = $db->prepare("SELECT email from users where username=:username");
-$stmt->bindValue(':username',$username);
+//$stmt=$db->prepare("select tr.booking_ref, tr.email, ps.service, tr.date_in, tr.date_out, tr.time_in, tr.amount, ts.transstat from transactions tr, pet_services ps, trans_status ts where tr.booking_ref=:booking_num and tr.service=ps.srv_code and tr.trans_stat=ts.transstat_code");
+$stmt=$db->prepare("select service from transactions where booking_ref=:booking_ref");
+$stmt->bindValue(':booking_num', $booking_num);
 $result = $stmt->execute();
 $row = $result->fetchArray();
-$email = $row[email];
 
-//$i=0;
-//for ($i=1; $i<=$numroom; $i++){
-//do{
-//print "$numroom";
-//get room to assign
-if($srv_code == 'BRD'){
- for ($i=1; $i<=$numroom; $i++){
-  $stmt = $db->prepare("SELECT room_name FROM rooms WHERE room_sz=:petsize and status='VAC' order by room_name desc limit 1");
-  $stmt->bindValue(':petsize',$petsize);
-  //$stmt->bindValue(':numroom',$numroom);
-  $result = $stmt->execute();
-  $row = $result->fetchArray();
-  $aroom = $row[room_name];
-  //if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-  //update status of assigned room
-  $stmt=$db->prepare("UPDATE rooms SET status='HLD' WHERE room_name=:aroom");
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->execute();
-
-
-  //if($srv_code == 'BRD'){
-  $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (NULL, datetime('now'),:email,:srv_code,:checkin,:checkout,0,:aroom,:est_amount,:booking_num,'RES')");
-  $stmt->bindValue(':email',$email);
-  $stmt->bindValue(':srv_code',$srv_code);
-  $stmt->bindValue(':checkin',$checkin);
-  $stmt->bindValue(':checkout',$checkout);
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->bindValue(':petsize',strtolower($psize));
-  $stmt->bindValue(':est_amount',$est_amount);
-  $stmt->bindValue(':booking_num',$booking_num);
-  $stmt->execute();
-  $stmt->close();
- }
-}
-else{
- $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (null, datetime('now'),:email,:srv_code,:checkin,0,:checkin_tg,:petsize,:est_amount,:booking_num,'RES')");
- $stmt->bindValue(':email',$email);
- $stmt->bindValue(':srv_code',$srv_code);
- $stmt->bindValue(':checkin',$checkin_g);
- $stmt->bindValue(':checkin_tg',$checkin_tg);
- $stmt->bindValue(':petsize',strtolower($psize));
- $stmt->bindValue(':est_amount',$est_amount);
- $stmt->bindValue(':booking_num',$booking_num);
- $stmt->execute(); 
- $stmt->close();
-}
-//}while($i<$numroom);
+$stmt->close();
 $db->close();
-//}
 
 ?>
 
@@ -158,7 +29,7 @@ $db->close();
 
 <head>
   <meta charset="UTF-8">
-  <title>creditcard</title>
+  <title>UpdateBooking</title>
   <meta name="referrer" content="same-origin">
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
   <style>
@@ -439,7 +310,7 @@ $db->close();
     }
 
     #b {
-      background: #020202 url(images/dark_mosaic.png) repeat center top
+      background: #000 url(images/dark_mosaic.png) repeat center top
     }
 
     .v25 {
@@ -468,7 +339,7 @@ $db->close();
       -moz-border-radius: 0;
       border-radius: 0;
       background-image: url(images/parkcityhome-320.jpeg);
-      background-color: #020202;
+      background-color: #000;
       background-repeat: no-repeat;
       background-position: 50% 50%;
       background-size: contain;
@@ -568,8 +439,8 @@ $db->close();
     .s250 {
       min-width: 736px;
       width: 736px;
-      min-height: 485px;
-      height: 485px
+      min-height: 350px;
+      height: 380px
     }
 
     .c210 {
@@ -586,7 +457,7 @@ $db->close();
       -moz-border-radius: 0;
       border-radius: 0;
       background-color: #fff;
-      opacity: 0.90;
+      opacity: 1.00;
       background-clip: padding-box;
       box-shadow: 8px 8px 18px -1px rgba(255, 255, 255, .71)
     }
@@ -600,7 +471,7 @@ $db->close();
     .ps207 {
       position: relative;
       margin-left: 0;
-      margin-top: 27px
+      margin-top: 19px
     }
 
     .s252 {
@@ -631,7 +502,7 @@ $db->close();
       font-style: normal;
       text-decoration: none;
       text-transform: none;
-      color: #020202;
+      color: #000;
       background-color: initial;
       line-height: 47px;
       letter-spacing: normal;
@@ -640,17 +511,29 @@ $db->close();
 
     .ps208 {
       position: relative;
-      margin-left: 155px;
-      margin-top: 29px
+      margin-left: 186px;
+      margin-top: 24px
     }
 
     .s253 {
+      min-width: 493px;
+      width: 493px;
+      min-height: 47px
+    }
+
+    .ps209 {
+      position: relative;
+      margin-left: 0;
+      margin-top: 0
+    }
+
+    .s254 {
       min-width: 173px;
       width: 173px;
       min-height: 35px
     }
 
-    .c213 {
+    .c214 {
       z-index: 6;
       pointer-events: auto;
       overflow: hidden;
@@ -672,124 +555,168 @@ $db->close();
       font-style: normal;
       text-decoration: none;
       text-transform: none;
-      color: #020202;
+      color: #000;
       background-color: initial;
       line-height: 26px;
       letter-spacing: normal;
       text-shadow: none
     }
 
-    .ps209 {
-      position: relative;
-      margin-left: 153px;
-      margin-top: -1px
-    }
-
-    .s254 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c214 {
-      z-index: 10;
-      pointer-events: auto
-    }
-
-    .input15 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 447px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
-    }
-
-    .input15::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
     .ps210 {
       position: relative;
-      margin-left: 155px;
-      margin-top: 5px
+      margin-left: 35px;
+      margin-top: 0
     }
 
     .s255 {
-      min-width: 445px;
-      width: 445px;
+      min-width: 285px;
+      width: 285px;
+      min-height: 47px
+    }
+
+    .w5 {
+      line-height: 0
+    }
+
+    .s256 {
+      min-width: 205px;
+      //width: 205px;
       min-height: 35px
+    }
+
+    .c215 {
+      z-index: 12;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .f55 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      font-style: normal;
+      text-decoration: none;
+      text-transform: none;
+      color: #155982;
+      background-color: initial;
+      line-height: 30px;
+      letter-spacing: normal;
+      text-shadow: none
     }
 
     .ps211 {
       position: relative;
       margin-left: 0;
-      margin-top: 0
+      margin-top: -10px
     }
 
-    .s256 {
-      min-width: 168px;
-      width: 168px;
-      min-height: 35px
+    .s257 {
+      min-width: 285px;
+      width: 285px;
+      min-height: 22px
     }
 
     .c216 {
+      z-index: 16;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 22px
+    }
+
+    .f56 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      font-style: italic;
+      text-decoration: none;
+      text-transform: none;
+      color: #000;
+      background-color: initial;
+      line-height: 32px;
+      letter-spacing: normal;
+      text-shadow: none
+    }
+
+    .ps212 {
+      position: relative;
+      margin-left: 74px;
+      margin-top: 0
+    }
+
+    .s258 {
+      min-width: 605px;
+      width: 605px;
+      min-height: 35px
+    }
+
+    .s259 {
+      min-width: 118px;
+      width: 118px;
+      min-height: 35px
+    }
+
+    .c217 {
       z-index: 7;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
     }
 
-    .ps212 {
-      position: relative;
-      margin-left: 5px;
-      margin-top: 0
-    }
-
-    .s257 {
-      min-width: 167px;
-      width: 167px;
+    .s260 {
+      min-width: 176px;
+      width: 176px;
       min-height: 35px
     }
 
-    .c217 {
+    .c218 {
       z-index: 8;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
     }
 
+    .f57 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      font-style: normal;
+      text-decoration: none;
+      text-transform: none;
+      color: #155982;
+      background-color: initial;
+      line-height: 29px;
+      letter-spacing: normal;
+      text-shadow: none
+    }
+
     .ps213 {
       position: relative;
-      margin-left: -2px;
+      margin-left: 2px;
       margin-top: 0
     }
 
-    .s258 {
-      min-width: 107px;
-      width: 107px;
+    .s261 {
+      min-width: 113px;
+      width: 113px;
       min-height: 35px
     }
 
-    .c218 {
-      z-index: 12;
+    .c219 {
+      z-index: 14;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .s262 {
+      min-width: 196px;
+      width: 196px;
+      min-height: 35px
+    }
+
+    .c220 {
+      z-index: 17;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
@@ -797,307 +724,210 @@ $db->close();
 
     .ps214 {
       position: relative;
-      margin-left: 153px;
-      margin-top: 3px
+      margin-left: 186px;
+      margin-top: 8px
     }
 
-    .s259 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px
-    }
-
-    .s260 {
-      min-width: 171px;
-      width: 171px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c219 {
-      z-index: 13;
-      pointer-events: auto
-    }
-
-    .input16 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 171px;;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
-    }
-
-    .input16::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps215 {
-      position: relative;
-      margin-left: 3px;
-      margin-top: 0
-    }
-
-    .s261 {
-      min-width: 167px;
-      width: 167px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c220 {
-      z-index: 14;
-      pointer-events: auto
-    }
-
-    .input17 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 167px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
-    }
-
-    .input17::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps216 {
-      position: relative;
-      margin-left: 4px;
-      margin-top: 0
-    }
-
-    .s262 {
-      min-width: 102px;
-      width: 102px;
-      min-height: 27px;
-      height: 27px
+    .s263 {
+      min-width: 388px;
+      width: 388px;
+      min-height: 35px
     }
 
     .c221 {
       z-index: 15;
-      pointer-events: auto
-    }
-
-    .input18 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 102px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: center;
-      padding: 4px
-    }
-
-    .input18::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps217 {
-      position: relative;
-      margin-left: 155px;
-      margin-top: 9px
-    }
-
-    .s263 {
-      min-width: 173px;
-      width: 173px;
-      min-height: 35px
-    }
-
-    .c222 {
-      z-index: 16;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
     }
 
-    .ps218 {
+    .ps215 {
       position: relative;
-      margin-left: 153px;
-      margin-top: 6px
+      margin-left: 38px;
+      margin-top: 0
     }
 
     .s264 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c223 {
-      z-index: 17;
-      pointer-events: auto
-    }
-
-    .input19 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 447px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
-    }
-
-    .input19::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps219 {
-      position: relative;
-      margin-left: 156px;
-      margin-top: -1px
-    }
-
-    .s265 {
-      min-width: 173px;
-      width: 173px;
+      min-width: 177px;
+      width: 177px;
       min-height: 35px
     }
 
-    .c224 {
+    .c222 {
       z-index: 18;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
     }
 
-    .ps220 {
-      position: relative;
-      margin-left: 154px;
-      margin-top: 6px
-    }
-
-    .s266 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c225 {
-      z-index: 19;
-      pointer-events: auto
-    }
-
-    .input20 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 447px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
+    .f58 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
       font-weight: 400;
       font-style: normal;
       text-decoration: none;
       text-transform: none;
-      color: #020202;
-      line-height: 14px;
+      color: #155982;
+      background-color: initial;
+      line-height: 26px;
       letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
+      text-shadow: none
     }
 
-    .input20::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps221 {
+    .ps216 {
       position: relative;
-      margin-left: 153px;
-      margin-top: 25px
+      margin-left: 186px;
+      margin-top: 0
+    }
+
+    .s265 {
+      min-width: 388px;
+      width: 388px;
+      min-height: 35px
+    }
+
+    .s266 {
+      min-width: 173px;
+      width: 173px;
+      min-height: 35px
+    }
+
+    .c223 {
+      z-index: 10;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
     }
 
     .s267 {
+      min-width: 177px;
+      width: 177px;
+      min-height: 35px
+    }
+
+    .c224 {
+      z-index: 11;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .s268 {
+      min-width: 493px;
+      width: 493px;
+      min-height: 35px
+    }
+
+    .s269 {
+      min-width: 173px;
+      width: 173px;
+      min-height: 35px
+    }
+
+    .c225 {
+      z-index: 19;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .s270 {
+      min-width: 282px;
+      width: 282px;
+      min-height: 35px
+    }
+
+    .c226 {
+      z-index: 20;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .s271 {
+      min-width: 493px;
+      width: 493px;
+      min-height: 35px
+    }
+
+    .c227 {
+      z-index: 21;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .s272 {
+      min-width: 282px;
+      width: 282px;
+      min-height: 35px
+    }
+
+    .c228 {
+      z-index: 22;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .ps217 {
+      position: relative;
+      margin-left: 186px;
+      margin-top: 14px
+    }
+
+    .c229 {
+      z-index: 23;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .c230 {
+      z-index: 24;
+      pointer-events: auto;
+      overflow: hidden;
+      height: 35px
+    }
+
+    .f59 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      font-style: normal;
+      text-decoration: none;
+      text-transform: none;
+      color: #155982;
+      background-color: initial;
+      line-height: 26px;
+      letter-spacing: normal;
+      text-shadow: none
+    }
+
+    .ps218 {
+      position: relative;
+      margin-left: 153px;
+      margin-top: 19px
+    }
+
+    .s273 {
       min-width: 447px;
       width: 447px;
       min-height: 40px
     }
 
-    .s268 {
+    .s274 {
       min-width: 207px;
       width: 207px;
       min-height: 40px
     }
 
-    .c226 {
+    .c231 {
       z-index: 9;
       pointer-events: auto
     }
 
-    .f55 {
+    .f60 {
       font-family: "Helvetica Neue", sans-serif;
       font-size: 18px;
       font-weight: 400;
@@ -1121,20 +951,20 @@ $db->close();
       -webkit-border-radius: 0;
       -moz-border-radius: 0;
       border-radius: 0;
-      background-color: #52646f;
+      background-color: #155982;
       background-clip: padding-box;
       color: #fff
     }
 
     .btn25:hover {
       background-color: transparent;
-      border-color: #020202;
-      color: #020202
+      border-color: #000;
+      color: #000
     }
 
     .btn25:active {
-      background-color: #52646f;
-      border-color: #020202;
+      background-color: #155982;
+      border-color: #000;
       color: #fff
     }
 
@@ -1144,42 +974,43 @@ $db->close();
       outline: 0
     }
 
-    .s269 {
+    .s275 {
       width: 205px;
       padding-right: 0;
-      height: auto
+      height: 22px
     }
 
-    .ps222 {
+    .ps219 {
       position: relative;
       margin-left: 33px;
       margin-top: 0
     }
 
-    .c227 {
-      z-index: 20;
+    .c232 {
+      z-index: 25;
       pointer-events: auto
     }
 
     .btn26 {
-      border: 1px dotted #020202;
+      border: 1px dotted #000;
       -webkit-border-radius: 0;
       -moz-border-radius: 0;
       border-radius: 0;
-      background-color: #52646f;
+      background-color: #155982;
       background-clip: padding-box;
-      color: #fff
+      color: #fff;
+      height: 41px
     }
 
     .btn26:hover {
       background-color: transparent;
-      border-color: #020202;
-      color: #020202
+      border-color: #000;
+      color: #000
     }
 
     .btn26:active {
-      background-color: #52646f;
-      border-color: #020202;
+      background-color: #155982;
+      border-color: #000;
       color: #fff
     }
 
@@ -1229,17 +1060,17 @@ $db->close();
       }
 
       .ps207 {
-        margin-top: 22px
+        margin-top: 15px
       }
 
       .s252 {
         min-width: 589px;
         width: 589px;
-        min-height: 37px
+        min-height: 38px
       }
 
       .c212 {
-        height: 37px
+        height: 38px
       }
 
       .f53 {
@@ -1248,17 +1079,23 @@ $db->close();
       }
 
       .ps208 {
-        margin-left: 124px;
-        margin-top: 24px
+        margin-left: 149px;
+        margin-top: 19px
       }
 
       .s253 {
+        min-width: 394px;
+        width: 394px;
+        min-height: 38px
+      }
+
+      .s254 {
         min-width: 138px;
         width: 138px;
         min-height: 28px
       }
 
-      .c213 {
+      .c214 {
         height: 28px
       }
 
@@ -1267,52 +1104,63 @@ $db->close();
         line-height: 20px
       }
 
-      .ps209 {
-        margin-left: 122px
-      }
-
-      .s254 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px;
-        height: 22px
-      }
-
-      .input15 {
-        width: 358px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
-      }
-
       .ps210 {
-        margin-left: 124px;
-        margin-top: 3px
+        margin-left: 28px
       }
 
       .s255 {
-        min-width: 356px;
-        width: 356px;
-        min-height: 28px
+        min-width: 228px;
+        width: 228px;
+        min-height: 38px
       }
 
       .s256 {
-        min-width: 134px;
-        width: 134px;
+        min-width: 164px;
+        width: 164px;
         min-height: 28px
       }
 
-      .c216 {
+      .c215 {
         height: 28px
       }
 
-      .ps212 {
-        margin-left: 4px
+      .f55 {
+        font-size: 16px;
+        line-height: 26px
+      }
+
+      .ps211 {
+        margin-top: -8px
       }
 
       .s257 {
-        min-width: 134px;
-        width: 134px;
+        min-width: 228px;
+        width: 228px;
+        min-height: 18px
+      }
+
+      .c216 {
+        height: 18px
+      }
+
+      .f56 {
+        font-size: 9px;
+        line-height: 14px
+      }
+
+      .ps212 {
+        margin-left: 59px
+      }
+
+      .s258 {
+        min-width: 484px;
+        width: 484px;
+        min-height: 28px
+      }
+
+      .s259 {
+        min-width: 94px;
+        width: 94px;
         min-height: 28px
       }
 
@@ -1320,9 +1168,9 @@ $db->close();
         height: 28px
       }
 
-      .s258 {
-        min-width: 86px;
-        width: 86px;
+      .s260 {
+        min-width: 141px;
+        width: 141px;
         min-height: 28px
       }
 
@@ -1330,74 +1178,53 @@ $db->close();
         height: 28px
       }
 
-      .ps214 {
-        margin-left: 122px
-      }
-
-      .s259 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px
-      }
-
-      .s260 {
-        min-width: 137px;
-        width: 137px;
-        min-height: 22px;
-        height: 22px
-      }
-
-      .input16 {
-        width: 171px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
-      }
-
-      .ps215 {
-        margin-left: 2px
+      .f57 {
+        font-size: 14px;
+        line-height: 23px
       }
 
       .s261 {
-        min-width: 134px;
-        width: 134px;
-        min-height: 22px;
-        height: 22px
+        min-width: 90px;
+        width: 90px;
+        min-height: 28px
       }
 
-      .input17 {
-        width: 134px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
-      }
-
-      .ps216 {
-        margin-left: 3px
+      .c219 {
+        height: 28px
       }
 
       .s262 {
-        min-width: 82px;
-        width: 82px;
-        min-height: 22px;
-        height: 22px
+        min-width: 157px;
+        width: 157px;
+        min-height: 28px
       }
 
-      .input18 {
-        width: 82px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
+      .c220 {
+        height: 28px
       }
 
-      .ps217 {
-        margin-left: 124px;
-        margin-top: 7px
+      .ps214 {
+        margin-left: 149px;
+        margin-top: 6px
       }
 
       .s263 {
-        min-width: 138px;
-        width: 138px;
+        min-width: 310px;
+        width: 310px;
+        min-height: 28px
+      }
+
+      .c221 {
+        height: 28px
+      }
+
+      .ps215 {
+        margin-left: 30px
+      }
+
+      .s264 {
+        min-width: 142px;
+        width: 142px;
         min-height: 28px
       }
 
@@ -1405,32 +1232,34 @@ $db->close();
         height: 28px
       }
 
-      .ps218 {
-        margin-left: 122px;
-        margin-top: 4px
+      .f58 {
+        font-size: 12px;
+        line-height: 20px
       }
 
-      .s264 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px;
-        height: 22px
-      }
-
-      .input19 {
-        width: 358px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
-      }
-
-      .ps219 {
-        margin-left: 125px
+      .ps216 {
+        margin-left: 149px
       }
 
       .s265 {
+        min-width: 310px;
+        width: 310px;
+        min-height: 28px
+      }
+
+      .s266 {
         min-width: 138px;
         width: 138px;
+        min-height: 28px
+      }
+
+      .c223 {
+        height: 28px
+      }
+
+      .s267 {
+        min-width: 142px;
+        width: 142px;
         min-height: 28px
       }
 
@@ -1438,54 +1267,99 @@ $db->close();
         height: 28px
       }
 
-      .ps220 {
-        margin-left: 123px;
-        margin-top: 5px
+      .s268 {
+        min-width: 394px;
+        width: 394px;
+        min-height: 28px
       }
 
-      .s266 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px;
-        height: 22px
+      .s269 {
+        min-width: 138px;
+        width: 138px;
+        min-height: 28px
       }
 
-      .input20 {
-        width: 358px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
+      .c225 {
+        height: 28px
       }
 
-      .ps221 {
+      .s270 {
+        min-width: 226px;
+        width: 226px;
+        min-height: 28px
+      }
+
+      .c226 {
+        height: 28px
+      }
+
+      .s271 {
+        min-width: 394px;
+        width: 394px;
+        min-height: 28px
+      }
+
+      .c227 {
+        height: 28px
+      }
+
+      .s272 {
+        min-width: 226px;
+        width: 226px;
+        min-height: 28px
+      }
+
+      .c228 {
+        height: 28px
+      }
+
+      .ps217 {
+        margin-left: 149px;
+        margin-top: 11px
+      }
+
+      .c229 {
+        height: 28px
+      }
+
+      .c230 {
+        height: 28px
+      }
+
+      .f59 {
+        font-size: 12px;
+        line-height: 20px
+      }
+
+      .ps218 {
         margin-left: 122px;
-        margin-top: 19px
+        margin-top: 15px
       }
 
-      .s267 {
+      .s273 {
         min-width: 358px;
         width: 358px;
         min-height: 33px
       }
 
-      .s268 {
+      .s274 {
         min-width: 166px;
         width: 166px;
         min-height: 33px
       }
 
-      .f55 {
+      .f60 {
         font-size: 14px;
         line-height: 16px;
         padding-bottom: 7px
       }
 
-      .s269 {
+      .s275 {
         width: 164px;
         height: 16px
       }
 
-      .ps222 {
+      .ps219 {
         margin-left: 26px
       }
     }
@@ -1536,17 +1410,17 @@ $db->close();
       }
 
       .ps207 {
-        margin-top: 14px
+        margin-top: 9px
       }
 
       .s252 {
         min-width: 368px;
         width: 368px;
-        min-height: 23px
+        min-height: 24px
       }
 
       .c212 {
-        height: 23px
+        height: 24px
       }
 
       .f53 {
@@ -1555,17 +1429,23 @@ $db->close();
       }
 
       .ps208 {
-        margin-left: 77px;
-        margin-top: 15px
+        margin-left: 93px;
+        margin-top: 12px
       }
 
       .s253 {
+        min-width: 246px;
+        width: 246px;
+        min-height: 24px
+      }
+
+      .s254 {
         min-width: 86px;
         width: 86px;
         min-height: 17px
       }
 
-      .c213 {
+      .c214 {
         height: 17px
       }
 
@@ -1574,142 +1454,127 @@ $db->close();
         line-height: 11px
       }
 
-      .ps209 {
-        margin-left: 76px
-      }
-
-      .s254 {
-        min-width: 224px;
-        width: 224px;
-        min-height: 15px;
-        height: 15px
-      }
-
-      .input15 {
-        width: 224px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
-      }
-
       .ps210 {
-        margin-left: 77px;
-        margin-top: 1px
+        margin-left: 18px
       }
 
       .s255 {
-        min-width: 223px;
-        width: 223px;
-        min-height: 18px
+        min-width: 142px;
+        width: 142px;
+        min-height: 24px
       }
 
       .s256 {
-        min-width: 84px;
-        width: 84px;
-        min-height: 18px
+        min-width: 102px;
+        width: 102px;
+        min-height: 17px
       }
 
-      .c216 {
-        height: 18px
+      .c215 {
+        height: 17px
       }
 
-      .ps212 {
-        margin-left: 2px
+      .f55 {
+        font-size: 10px;
+        line-height: 16px
+      }
+
+      .ps211 {
+        margin-top: -5px
       }
 
       .s257 {
-        min-width: 84px;
-        width: 84px;
-        min-height: 18px
+        min-width: 142px;
+        width: 142px;
+        min-height: 12px
       }
 
-      .c217 {
-        height: 18px
+      .c216 {
+        height: 12px
       }
 
-      .ps213 {
-        margin-left: -1px
+      .f56 {
+        font-size: 5px;
+        line-height: 7px
+      }
+
+      .ps212 {
+        margin-left: 37px
       }
 
       .s258 {
-        min-width: 54px;
-        width: 54px;
-        min-height: 18px
-      }
-
-      .c218 {
-        height: 18px
-      }
-
-      .ps214 {
-        margin-left: 76px;
-        margin-top: 1px
+        min-width: 302px;
+        width: 302px;
+        min-height: 17px
       }
 
       .s259 {
-        min-width: 224px;
-        width: 224px;
-        min-height: 15px
+        min-width: 58px;
+        width: 58px;
+        min-height: 17px
+      }
+
+      .c217 {
+        height: 17px
       }
 
       .s260 {
-        min-width: 86px;
-        width: 86px;
-        min-height: 15px;
-        height: 15px
+        min-width: 88px;
+        width: 88px;
+        min-height: 17px
       }
 
-      .input16 {
-        width: 86px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
+      .c218 {
+        height: 17px
       }
 
-      .ps215 {
-        margin-left: 0
+      .f57 {
+        font-size: 8px;
+        line-height: 12px
       }
 
       .s261 {
-        min-width: 85px;
-        width: 85px;
-        min-height: 15px;
-        height: 15px
+        min-width: 56px;
+        width: 56px;
+        min-height: 17px
       }
 
-      .input17 {
-        width: 85px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
-      }
-
-      .ps216 {
-        margin-left: 1px
+      .c219 {
+        height: 17px
       }
 
       .s262 {
-        min-width: 52px;
-        width: 52px;
-        min-height: 15px;
-        height: 15px
+        min-width: 98px;
+        width: 98px;
+        min-height: 17px
       }
 
-      .input18 {
-        width: 52px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
+      .c220 {
+        height: 17px
       }
 
-      .ps217 {
-        margin-left: 77px;
+      .ps214 {
+        margin-left: 93px;
         margin-top: 4px
       }
 
       .s263 {
-        min-width: 86px;
-        width: 86px;
+        min-width: 194px;
+        width: 194px;
+        min-height: 17px
+      }
+
+      .c221 {
+        height: 17px
+      }
+
+      .ps215 {
+        margin-left: 19px
+      }
+
+      .s264 {
+        min-width: 89px;
+        width: 89px;
         min-height: 17px
       }
 
@@ -1717,88 +1582,135 @@ $db->close();
         height: 17px
       }
 
-      .ps218 {
-        margin-left: 76px;
-        margin-top: 2px
+      .f58 {
+        font-size: 7px;
+        line-height: 11px
       }
 
-      .s264 {
-        min-width: 224px;
-        width: 224px;
-        min-height: 15px;
-        height: 15px
-      }
-
-      .input19 {
-        width: 224px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
-      }
-
-      .ps219 {
-        margin-left: 78px
+      .ps216 {
+        margin-left: 93px
       }
 
       .s265 {
+        min-width: 194px;
+        width: 194px;
+        min-height: 18px
+      }
+
+      .s266 {
+        min-width: 86px;
+        width: 86px;
+        min-height: 18px
+      }
+
+      .c223 {
+        height: 18px
+      }
+
+      .s267 {
+        min-width: 89px;
+        width: 89px;
+        min-height: 18px
+      }
+
+      .c224 {
+        height: 18px
+      }
+
+      .s268 {
+        min-width: 246px;
+        width: 246px;
+        min-height: 17px
+      }
+
+      .s269 {
         min-width: 86px;
         width: 86px;
         min-height: 17px
       }
 
-      .c224 {
+      .c225 {
         height: 17px
       }
 
-      .ps220 {
+      .s270 {
+        min-width: 141px;
+        width: 141px;
+        min-height: 17px
+      }
+
+      .c226 {
+        height: 17px
+      }
+
+      .s271 {
+        min-width: 246px;
+        width: 246px;
+        min-height: 18px
+      }
+
+      .c227 {
+        height: 18px
+      }
+
+      .s272 {
+        min-width: 141px;
+        width: 141px;
+        min-height: 18px
+      }
+
+      .c228 {
+        height: 18px
+      }
+
+      .ps217 {
+        margin-left: 93px;
+        margin-top: 7px
+      }
+
+      .c229 {
+        height: 17px
+      }
+
+      .c230 {
+        height: 17px
+      }
+
+      .f59 {
+        font-size: 7px;
+        line-height: 11px
+      }
+
+      .ps218 {
         margin-left: 76px;
-        margin-top: 3px
+        margin-top: 9px
       }
 
-      .s266 {
-        min-width: 225px;
-        width: 225px;
-        min-height: 15px;
-        height: 15px
-      }
-
-      .input20 {
-        width: 225px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
-      }
-
-      .ps221 {
-        margin-left: 76px;
-        margin-top: 11px
-      }
-
-      .s267 {
+      .s273 {
         min-width: 224px;
         width: 224px;
-        min-height: 21px
+        min-height: 22px
       }
 
-      .s268 {
+      .s274 {
         min-width: 104px;
         width: 104px;
-        min-height: 21px
+        min-height: 22px
       }
 
-      .f55 {
+      .f60 {
         font-size: 8px;
         line-height: 10px;
         padding-top: 5px;
-        padding-bottom: 4px
+        padding-bottom: 5px
       }
 
-      .s269 {
+      .s275 {
         width: 102px;
         height: 10px
       }
 
-      .ps222 {
+      .ps219 {
         margin-left: 16px
       }
     }
@@ -1849,7 +1761,7 @@ $db->close();
       }
 
       .ps207 {
-        margin-top: 9px
+        margin-top: 6px
       }
 
       .s252 {
@@ -1868,17 +1780,23 @@ $db->close();
       }
 
       .ps208 {
-        margin-left: 52px;
-        margin-top: 10px
+        margin-left: 62px;
+        margin-top: 8px
       }
 
       .s253 {
-        min-width: 57px;
-        width: 57px;
+        min-width: 164px;
+        width: 164px;
+        min-height: 16px
+      }
+
+      .s254 {
+        min-width: 58px;
+        width: 58px;
         min-height: 11px
       }
 
-      .c213 {
+      .c214 {
         height: 11px
       }
 
@@ -1887,175 +1805,162 @@ $db->close();
         line-height: 6px
       }
 
-      .ps209 {
-        margin-left: 51px
-      }
-
-      .s254 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 11px;
-        height: 11px
-      }
-
-      .input15 {
-        width: 150px;
-        height: 11px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
       .ps210 {
-        margin-left: 52px;
-        margin-top: 0
+        margin-left: 12px
       }
 
       .s255 {
-        min-width: 148px;
-        width: 148px;
-        min-height: 12px
+        min-width: 94px;
+        width: 94px;
+        min-height: 16px
       }
 
       .s256 {
-        min-width: 56px;
-        width: 56px;
-        min-height: 12px
+        min-width: 68px;
+        width: 68px;
+        min-height: 11px
       }
 
-      .c216 {
-        height: 12px
+      .c215 {
+        height: 11px
       }
 
-      .ps212 {
-        margin-left: 1px
+      .f55 {
+        font-size: 6px;
+        line-height: 10px
+      }
+
+      .ps211 {
+        margin-top: -3px
       }
 
       .s257 {
-        min-width: 56px;
-        width: 56px;
-        min-height: 12px
+        min-width: 94px;
+        width: 94px;
+        min-height: 8px
       }
 
-      .c217 {
-        height: 12px
+      .c216 {
+        height: 8px
       }
 
-      .ps213 {
-        margin-left: -1px
+      .f56 {
+        font-size: 3px;
+        line-height: 5px
+      }
+
+      .ps212 {
+        margin-left: 25px
       }
 
       .s258 {
-        min-width: 36px;
-        width: 36px;
-        min-height: 12px
-      }
-
-      .c218 {
-        height: 12px
-      }
-
-      .ps214 {
-        margin-left: 51px;
-        margin-top: 0
+        min-width: 201px;
+        width: 201px;
+        min-height: 11px
       }
 
       .s259 {
-        min-width: 150px;
-        width: 150px;
+        min-width: 39px;
+        width: 39px;
         min-height: 11px
+      }
+
+      .c217 {
+        height: 11px
       }
 
       .s260 {
         min-width: 58px;
         width: 58px;
-        min-height: 11px;
+        min-height: 11px
+      }
+
+      .c218 {
         height: 11px
       }
 
-      .input16 {
-        width: 58px;
-        height: 11px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
-      .ps215 {
-        margin-left: -1px
+      .f57 {
+        font-size: 5px;
+        line-height: 7px
       }
 
       .s261 {
-        min-width: 57px;
-        width: 57px;
-        min-height: 11px;
+        min-width: 37px;
+        width: 37px;
+        min-height: 11px
+      }
+
+      .c219 {
         height: 11px
-      }
-
-      .input17 {
-        width: 57px;
-        height: 11px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
-      .ps216 {
-        margin-left: 0
       }
 
       .s262 {
-        min-width: 36px;
-        width: 36px;
-        min-height: 11px;
+        min-width: 65px;
+        width: 65px;
+        min-height: 11px
+      }
+
+      .c220 {
         height: 11px
       }
 
-      .input18 {
-        width: 36px;
-        height: 11px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
-      .ps217 {
-        margin-left: 52px;
-        margin-top: 2px
+      .ps214 {
+        margin-left: 62px;
+        margin-top: 3px
       }
 
       .s263 {
-        min-width: 57px;
-        width: 57px;
-        min-height: 12px
+        min-width: 130px;
+        width: 130px;
+        min-height: 11px
       }
 
-      .c222 {
-        height: 12px
+      .c221 {
+        height: 11px
       }
 
-      .ps218 {
-        margin-left: 51px;
-        margin-top: 1px
+      .ps215 {
+        margin-left: 12px
       }
 
       .s264 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 10px;
-        height: 10px
+        min-width: 60px;
+        width: 60px;
+        min-height: 11px
       }
 
-      .input19 {
-        width: 150px;
-        height: 10px;
-        font-size: 3px;
-        line-height: 4px
+      .c222 {
+        height: 11px
       }
 
-      .ps219 {
-        margin-left: 52px
+      .f58 {
+        font-size: 4px;
+        line-height: 6px
+      }
+
+      .ps216 {
+        margin-left: 62px
       }
 
       .s265 {
+        min-width: 130px;
+        width: 130px;
+        min-height: 12px
+      }
+
+      .s266 {
         min-width: 58px;
         width: 58px;
+        min-height: 12px
+      }
+
+      .c223 {
+        height: 12px
+      }
+
+      .s267 {
+        min-width: 60px;
+        width: 60px;
         min-height: 12px
       }
 
@@ -2063,55 +1968,100 @@ $db->close();
         height: 12px
       }
 
-      .ps220 {
-        margin-left: 51px;
-        margin-top: 1px
-      }
-
-      .s266 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 11px;
-        height: 11px
-      }
-
-      .input20 {
-        width: 150px;
-        height: 11px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
-      .ps221 {
-        margin-left: 51px;
-        margin-top: 7px
-      }
-
-      .s267 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 14px
-      }
-
       .s268 {
-        min-width: 70px;
-        width: 70px;
-        min-height: 14px
-      }
-
-      .f55 {
-        font-size: 5px;
-        line-height: 6px;
-        padding-top: 3px;
-        padding-bottom: 3px
+        min-width: 164px;
+        width: 164px;
+        min-height: 12px
       }
 
       .s269 {
+        min-width: 58px;
+        width: 58px;
+        min-height: 12px
+      }
+
+      .c225 {
+        height: 12px
+      }
+
+      .s270 {
+        min-width: 94px;
+        width: 94px;
+        min-height: 12px
+      }
+
+      .c226 {
+        height: 12px
+      }
+
+      .s271 {
+        min-width: 164px;
+        width: 164px;
+        min-height: 12px
+      }
+
+      .c227 {
+        height: 12px
+      }
+
+      .s272 {
+        min-width: 94px;
+        width: 94px;
+        min-height: 12px
+      }
+
+      .c228 {
+        height: 12px
+      }
+
+      .ps217 {
+        margin-left: 62px;
+        margin-top: 4px
+      }
+
+      .c229 {
+        height: 12px
+      }
+
+      .c230 {
+        height: 12px
+      }
+
+      .f59 {
+        font-size: 4px;
+        line-height: 6px
+      }
+
+      .ps218 {
+        margin-left: 51px;
+        margin-top: 5px
+      }
+
+      .s273 {
+        min-width: 150px;
+        width: 150px;
+        min-height: 16px
+      }
+
+      .s274 {
+        min-width: 70px;
+        width: 70px;
+        min-height: 16px
+      }
+
+      .f60 {
+        font-size: 5px;
+        line-height: 6px;
+        padding-top: 4px;
+        padding-bottom: 4px
+      }
+
+      .s275 {
         width: 68px;
         height: 6px
       }
 
-      .ps222 {
+      .ps219 {
         margin-left: 10px
       }
     }
@@ -2399,7 +2349,7 @@ $db->close();
       }
     }
 
-    /* The Modal (background) */
+/* The Modal (background) */
     .modal {
       display: none; /* Hidden by default */
       position: fixed; /* Stay in place */
@@ -2473,7 +2423,6 @@ $db->close();
       color: white;
       font-size: 24px;
     }
-
   </style>
   <script>
     ! function() {
@@ -2483,15 +2432,15 @@ $db->close();
       }, A.src = "data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAD8D+JaQAA3AA/ua1AAA"
     }();
   </script>
-  <link onload="this.media='all';this.onload=null;" rel="stylesheet" href="css/site.9541f8.css" media="print">
+  <link onload="this.media='all';this.onload=null;" rel="stylesheet" href="css/site.2264d3.css" media="print">
   <!--[if lte IE 7]>
-<link rel="stylesheet" href="css/site.9541f8-lteIE7.css" type="text/css">
+<link rel="stylesheet" href="css/site.2264d3-lteIE7.css" type="text/css">
 <![endif]-->
   <!--[if lte IE 8]>
-<link rel="stylesheet" href="css/site.9541f8-lteIE8.css" type="text/css">
+<link rel="stylesheet" href="css/site.2264d3-lteIE8.css" type="text/css">
 <![endif]-->
   <!--[if gte IE 9]>
-<link rel="stylesheet" href="css/site.9541f8-gteIE9.css" type="text/css">
+<link rel="stylesheet" href="css/site.2264d3-gteIE9.css" type="text/css">
 <![endif]-->
 </head>
 
@@ -2502,101 +2451,97 @@ $db->close();
   <div class="ps205 v26 s248">
     <div class="s249">
       <div class="v25 ps206 s250 c210">
-      <!--form class="v25 ps206 s250 c210" action="email_confirm.php" method="POST"-->
         <div class="c211 s251">
         </div>
         <div class="v25 ps207 s252 c212">
-          <p class="p14 f53">Confirm Booking</p>
+          <p class="p14 f53">Room to Update</p>
         </div>
         <div class="v25 ps208 s253 c213">
-          <p class="p15 f54">Card number*</p>
-        </div>
-        <div class="v25 ps209 s254 c214">
-          <input id="cc_number" type="text" name="cc_number" class="input15">
-        </div>
-        <div class="v25 ps210 s255 c215">
-          <div class="v25 ps211 s256 c216">
-            <p class="p15 f54">Card Expiration*</p>
+          <div class="v25 ps209 s254 c214">
+            <p class="p15 f54">Room Number :</p>
           </div>
-          <div class="v25 ps212 s257 c217">
-            <!--p class="p15 f54">Expiration Year*</p-->
-          </div>
-          <div class="v25 ps213 s258 c218">
-            <p class="p15 f54">Security Code*</p>
+          <div class="v25 ps210 s255 w5">
+            <div class="v25 ps209 s256 c215">
+              <!--p class="p15 f55">booking reference</p-->
+              <input id="room_name" name="room_name" type="text" class="p15 f55"></input>
+            </div>
+            <div class="v25 ps211 s257 c216">
+              <p class="p15 f56">&lt;Select from A1-A6, B1-B4, C1-C2 then press Enter&gt;</p>
+            </div>
           </div>
         </div>
-        <div class="v25 ps214 s259 c215">
-          <div class="v25 ps211 s260 c219">
-            <input id="cc_exp" type="month" name="cc_exp" class="input16">
+        <div class="v25 ps214 s263 c213">
+          <div class="v25 ps209 s254 c221">
+            <p class="p15 f54">Room Size :</p>
           </div>
-          <div class="v25 ps215 s261 c220">
-            <!--input type="text" name="text" class="input17"-->
-          </div>
-          <div class="v25 ps216 s262 c221">
-            <input id="sec_code" type="text" name="sec_code" class="input18">
+          <div class="v25 ps215 s264 c222">
+            <!--p class="p15 f58">check in date and time</p-->
+            <div id="room_sz" class="p15 f58">room size</div>
           </div>
         </div>
-        <div class="v25 ps217 s263 c222">
-          <p class="p15 f54">Name on card*</p>
-        </div>
-        <div class="v25 ps218 s264 c223">
-          <input id="cc_name" type="text" name="cc_name" class="input19">
-        </div>
-        <div class="v25 ps219 s265 c224">
-          <p class="p15 f54">Email*</p>
-        </div>
-        <div class="v25 ps220 s266 c225">
-          <!--input type="text" name="text" class="input20"-->
-<?php if(isset($_SESSION['username'])):?>
-<input id="email" type="text" name="text" class="input20" value=<?php echo $email;?>>
-<?php else:?>
-<input type="text" name="text" class="input20">
-<?php endif;?>
-        </div>
-        <div class="v25 ps221 s267 c215">
-          <div class="v25 ps211 s268 c226">
-            <!--a href="services.php" class="f55 btn25 v27 s269">&lt;&lt; Back</a-->
-            <button onclick="goBack()" id="myBtnBack" class="f55 btn25 v27 s269">&lt;&lt; Back</button>
+        <div class="v25 ps216 s268 c213">
+          <div class="v25 ps209 s269 c225">
+            <p class="p15 f54">Reserved to :</p>
           </div>
-          <div class="v25 ps222 s268 c227">
-            <!--a href="./" class="f55 btn26 v27 s269">Confirm Booking &gt;&gt;</a-->
-            <button onclick="myFunction()" id="myBtn" class="f55 btn26 v27 s269">Confirm Booking &gt;&gt;</button>
+          <div class="v25 ps215 s270 c226">
+            <!--p class="p15 f58">check out date and time</p-->
+            <div id="res_booking" class="p15 f58">N/A</div>
+          </div>
+        </div>
+        <div class="v25 ps217 s268 c213">
+          <div class="v25 ps209 s269 c229">
+            <p class="p15 f54">Status</p>
+          </div>
+          <div class="v25 ps215 s270 c230">
+            <div id="status1">
+            <select class="p15 f54" name="status" id="status">
+               <option class="p15 f54" value="VAC">Vacant</option>
+               <option class="p15 f54" value="RES">Reserved</option>
+               <option class="p15 f54" value="OCC">Occupied</option>
+               <option class="p15 f54" value="CO">Check Out</option>
+               <option class="p15 f54" value="HLD">Hold</option>
+            </select>
+            </div>
+          </div>
+        </div>
+        <div class="v25 ps218 s273 c213">
+          <div class="v25 ps209 s274 c231">
+            <a href="./" class="f60 btn25 v27 s275">&lt;&lt; Cancel</a>
+          </div>
+          <div class="v25 ps219 s274 c232">
+            <!--a href="./" class="f60 btn26 v27 s275">Continue &gt;&gt;</a-->
+            <button onclick="myFunction()" id="myBtn" class="f60 btn26 v27 s275">Update &gt;&gt;</button>
           </div>
         </div>
       </div>
-      <!--/form-->
     </div>
   </div>
   <div class="v1 ps172 s158 c206"></div>
   <!-- The Modal -->
-  <div id="myModal" class="modal">
+    <div id="myModal" class="modal">
 
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h2>Park City Pet Boarding</h2>
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Park City Pet Boarding</h2>
+        </div>
+        <div class="modal-body">
+          <p>&nbsp;</p>
+          <p>Room status was successfully updated!</p>
+          <p>&nbsp;</p>
+          <p>&nbsp;</p>
+        </div>
+        <div class="modal-footer">
+          <h3>Thank you!</h3>
+        </div>
       </div>
-      <div class="modal-body">
-        <p>&nbsp;</p>
-        <p>Your reservation is confirmed!!!</p>
-        <p>&nbsp;</p>
-        <p>Booking Reference: <?php echo $booking_num?></p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>Please check your email for full details.</p>
-        <p>&nbsp;</p>
-      </div>
-      <div class="modal-footer">
-        <h3>Thank you!</h3>
-      </div>
+
     </div>
-
-  </div>
   <script>
     dpth = "/";
     ! function() {
-      var s = ["js/jquery.c71cd4.js", "js/creditcard.9541f8.js"],
+      var s = ["js/jquery.c71cd4.js", "js/updatebooking.2264d3.js"],
         n = {},
         j = 0,
         e = function(e) {
@@ -2618,64 +2563,86 @@ $db->close();
       document.getElementsByTagName('body')[0].className += ' whitespacefix';
     }
   </script>
+  <script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
 
-<script>
-function sendEmailConfirmation(){
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
 
-        var jsvar = '<?php echo $booking_num;?>';
-        var jsvar1 = '<?php echo $email;?>';
-        var jsvar2 = '<?php echo $username;?>';
-        var jsvar3 = '<?php echo $checkin;?>';
-        var jsvar4 = '<?php echo $checkout;?>';
-        var jsvar5 = '<?php echo $checkin_g;?>';
-        var jsvar6 = '<?php echo $checkin_tg;?>';
-        var jsvar7 = '<?php echo $srv_code;?>';
-        var jsvar8 = '<?php echo $est_amount;?>';
- 
- 
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+      updateRoomStat();
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    document.location.href="/";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script>
+      $(document).on("keypress", "input", function(e){
+          if(e.which == 13){
+              var inputVal = $(this).val();
+              //alert("You've entered: " + inputVal);
+              retrieveRoom();
+          }
+      });
+  </script>
+  <script>
+  function retrieveRoom(){
+
+          var room_name = document.getElementById("room_name").value;
+          $.ajax({
+                  url: 'room_retrieve.php',
+                  type: 'POST',
+                  dataType: 'json',
+                  data:{
+                    room_name: room_name
+                  },
+                  success: function(data)
+                  {
+                    var room_name = data[0];
+                    var room_sz = data[1];
+                    //var res_booking = res_booking[2];
+                    var room_status = data[2];
+                    var res_booking = data[3];
+                    //var booking_ref = data[3];
+                    $('#room_name').html("<p><b>Room Name: "+room_name+"<b><p>");
+                    $('#room_sz').html("<p>"+room_sz+"</p>");
+                    $('#res_booking').html("<p>"+res_booking+"</p>");
+                    $('#status').val(room_status);
+                    $('#status').select2().trigger('change');
+                  }
+          });
+  }
+
+  </script>
+  <script>
+function updateRoomStat(){
+
+	var jsvar = document.getElementById("room_name").value; 
+	var jsvar1 = document.getElementById("status").value; 
         var request = $.ajax({
-                url: 'email_confirm.php',
-                type: 'POST',
-                dataType: 'html',
-                data:{
-                     booking_num: jsvar,
-                     emailadd: jsvar1,
-                     username: jsvar2,
-                     checkin: jsvar3,
-                     checkout: jsvar4,
-                     checkin_g: jsvar5,
-                     checkin_tg: jsvar6,
-                     srv_code: jsvar7,
-                     amount: jsvar8
-                }
-        });
-
-        request.done( function ( data ) {
-                $('#myBtn').html( data );
-        });
-
-        request.fail( function ( jqXHR, textStatus) {
-                console.log( 'Sorry: ' + textStatus );
-        });
-
-}
-
-</script>
-<script>
-
-function imAnAjaxFunction(){
-
-	var jsvar = '<?php echo $booking_num;?>';
-	var jsvar1 = '<?php echo $srv_code;?>';
-	var jsvar2 = '<?php echo $numroom;?>';
-        var request = $.ajax({
-   		url: 'test.php',
+   		url: 'admin_rmupdate.php',
    		type: 'POST',
    		dataType: 'html',
                 data:{
-                     booking_num: jsvar,
-                     srv_code: jsvar1,
-                     numroom: jsvar2
+                     room_name: jsvar,
+                     tr_status: jsvar1
                 }
  	});
 
@@ -2690,85 +2657,6 @@ function imAnAjaxFunction(){
 }
 
 </script>
-  <script>
-//  function insertToDB(){
-//$(document).ready(function() {
-//$("#myBtn").click(function(){
-//     $.ajax({url: "test.php", type: "post"});
-// });
-//});
-//  }
-
-  function goBack() {
-    window.history.back();
-  }
-
-  function cardnumber(inputtxt)
-  {
-    var vcardno = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-    var mcardno = /^(?:5[1-5][0-9]{14})$/;
-    if (checkCardFields()){
-      if(inputtxt.value.match(vcardno) || inputtxt.value.match(mcardno))
-      {
-        modal.style.display = "block";
-	imAnAjaxFunction();
-        sendEmailConfirmation();
-        return true;
-      }
-      else
-      {
-        alert("Not a valid Mastercard/Visa credit card number!");
-        return false;
-      }
-    }
-    else{
-      alert("Please check the required fields!");
-    }
-  }
-
-  function checkCardFields()
-  {
-    var cc_number = document.getElementById('cc_number').value;
-    var cc_exp = document.getElementById('cc_exp').value;
-    var sec_code = document.getElementById('sec_code').value;
-    var cc_name = document.getElementById('cc_name').value;
-
-    if(cc_number && cc_exp && sec_code && cc_name)
-      {
-        return true;
-      }
-      else
-      {
-          return false;
-      }
-  }
-
-  // Get the modal
-  var modal = document.getElementById("myModal");
-
-  // Get the button that opens the modal
-  var btn = document.getElementById("myBtn");
-
-  // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
-
-  // When the user clicks the button, open the modal
-  btn.onclick = function() {
-    cardnumber(document.getElementById("cc_number"));
-  }
-
-  // When the user clicks on <span> (x), close the modal
-  span.onclick = function() {
-    modal.style.display = "none";
-  document.location.href="/";
-  }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-  </script>
 </body>
+
 </html>

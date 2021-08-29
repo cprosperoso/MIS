@@ -3,60 +3,37 @@ if (!session_id()) session_start();
 
 $booking_num=rand_code(7);
 
-$checkin = $_SESSION['checkin'];      //boarding
-$checkout = $_SESSION['checkout'];    //boarding
-$checkin_g = $_SESSION['checkin_g'];  //grooming
-$checkin_tg = $_SESSION['checkin_tg'];//grooming
-$numroom = $_SESSION['numroom'];
-$petsize = $_SESSION['petsize'];
-$p_type = $_SESSION['p_type'];
-$srv_code = $_SESSION['srv_code'];
-$est_amount = $_SESSION['est_amount'];
+$checkin = $_POST['checkin'];
+$checkout = $_POST['checkout'];
+$numroom = $_POST['numroom'];
+$petsize = $_POST['petsize'];
+$p_type = $_POST['p_type'];
+
 $username = $_SESSION['username'];
 
-//$booking_num1=$_POST['booking_num'];
-//$srv_code1=$_POST['srv_code'];
-/*print "check in: $checkin\n";
-print "check out: $checkout\n";
-print "checkin groom: $checkin_g\n";
-print "time groom: $checkin_tg\n";
-print "numroom: $numroom\n";
-print "petsize: $petsize\n";
-print "pettype: $p_type\n";
-print "srv_code: $srv_code\n";
-print "username: $username\n";
-print "booking: $booking_num\n";
-print "amount: $est_amount\n";*/
-
-//print "Here: $booking_num";
-//print "again: $srv_code";
 //computation
-/*$numOfDays = (strtotime($checkout) - strtotime($checkin)) / (60 * 60 * 24);
+$numOfDays = (strtotime($checkout) - strtotime($checkin)) / (60 * 60 * 24);
 switch (strtolower($petsize)){
 case "small":
-if($srv_code == "GRM")
 $est_amount = ($numroom*65 * $numOfDays);
-else
-$est_amount = 45*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p";
 break;
 case "medium":
-if($srv_code == "GRM")
 $est_amount = ($numroom*75 * $numOfDays);
-else
-$est_amount = 60*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
 break;
 default:
-if($srv_code == "GRM")
 $est_amount = ($numroom*85 * $numOfDays);
-else
-$est_amount = 65*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
 }
 
-print "amount: $est_amount\n";
-*/
+$db = new SQLite3('park_city.db');
+
+$stmt = $db->prepare("SELECT email from users where username=:username");
+$stmt->bindValue(':username',$username);
+$result = $stmt->execute();
+//$stmt->bind_result($email);
+$row = $result->fetchArray();
 
 function rand_code($len)
 {
@@ -91,68 +68,7 @@ function rand_code($len)
  return $CodeEX;
 }
 
-$db = new SQLite3('park_city.db');
-
-//get user's email address
-$stmt = $db->prepare("SELECT email from users where username=:username");
-$stmt->bindValue(':username',$username);
-$result = $stmt->execute();
-$row = $result->fetchArray();
-$email = $row[email];
-
-//$i=0;
-//for ($i=1; $i<=$numroom; $i++){
-//do{
-//print "$numroom";
-//get room to assign
-if($srv_code == 'BRD'){
- for ($i=1; $i<=$numroom; $i++){
-  $stmt = $db->prepare("SELECT room_name FROM rooms WHERE room_sz=:petsize and status='VAC' order by room_name desc limit 1");
-  $stmt->bindValue(':petsize',$petsize);
-  //$stmt->bindValue(':numroom',$numroom);
-  $result = $stmt->execute();
-  $row = $result->fetchArray();
-  $aroom = $row[room_name];
-  //if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-  //update status of assigned room
-  $stmt=$db->prepare("UPDATE rooms SET status='HLD' WHERE room_name=:aroom");
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->execute();
-
-
-  //if($srv_code == 'BRD'){
-  $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (NULL, datetime('now'),:email,:srv_code,:checkin,:checkout,0,:aroom,:est_amount,:booking_num,'RES')");
-  $stmt->bindValue(':email',$email);
-  $stmt->bindValue(':srv_code',$srv_code);
-  $stmt->bindValue(':checkin',$checkin);
-  $stmt->bindValue(':checkout',$checkout);
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->bindValue(':petsize',strtolower($psize));
-  $stmt->bindValue(':est_amount',$est_amount);
-  $stmt->bindValue(':booking_num',$booking_num);
-  $stmt->execute();
-  $stmt->close();
- }
-}
-else{
- $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (null, datetime('now'),:email,:srv_code,:checkin,0,:checkin_tg,:petsize,:est_amount,:booking_num,'RES')");
- $stmt->bindValue(':email',$email);
- $stmt->bindValue(':srv_code',$srv_code);
- $stmt->bindValue(':checkin',$checkin_g);
- $stmt->bindValue(':checkin_tg',$checkin_tg);
- $stmt->bindValue(':petsize',strtolower($psize));
- $stmt->bindValue(':est_amount',$est_amount);
- $stmt->bindValue(':booking_num',$booking_num);
- $stmt->execute(); 
- $stmt->close();
-}
-//}while($i<$numroom);
-$db->close();
-//}
-
 ?>
-
 <!DOCTYPE html>
 <html>
 
@@ -2502,7 +2418,6 @@ $db->close();
   <div class="ps205 v26 s248">
     <div class="s249">
       <div class="v25 ps206 s250 c210">
-      <!--form class="v25 ps206 s250 c210" action="email_confirm.php" method="POST"-->
         <div class="c211 s251">
         </div>
         <div class="v25 ps207 s252 c212">
@@ -2548,7 +2463,7 @@ $db->close();
         <div class="v25 ps220 s266 c225">
           <!--input type="text" name="text" class="input20"-->
 <?php if(isset($_SESSION['username'])):?>
-<input id="email" type="text" name="text" class="input20" value=<?php echo $email;?>>
+<input id="email" type="text" name="text" class="input20" value=<?php echo $row['email'];?>>
 <?php else:?>
 <input type="text" name="text" class="input20">
 <?php endif;?>
@@ -2564,7 +2479,6 @@ $db->close();
           </div>
         </div>
       </div>
-      <!--/form-->
     </div>
   </div>
   <div class="v1 ps172 s158 c206"></div>
@@ -2618,87 +2532,7 @@ $db->close();
       document.getElementsByTagName('body')[0].className += ' whitespacefix';
     }
   </script>
-
-<script>
-function sendEmailConfirmation(){
-
-        var jsvar = '<?php echo $booking_num;?>';
-        var jsvar1 = '<?php echo $email;?>';
-        var jsvar2 = '<?php echo $username;?>';
-        var jsvar3 = '<?php echo $checkin;?>';
-        var jsvar4 = '<?php echo $checkout;?>';
-        var jsvar5 = '<?php echo $checkin_g;?>';
-        var jsvar6 = '<?php echo $checkin_tg;?>';
-        var jsvar7 = '<?php echo $srv_code;?>';
-        var jsvar8 = '<?php echo $est_amount;?>';
- 
- 
-        var request = $.ajax({
-                url: 'email_confirm.php',
-                type: 'POST',
-                dataType: 'html',
-                data:{
-                     booking_num: jsvar,
-                     emailadd: jsvar1,
-                     username: jsvar2,
-                     checkin: jsvar3,
-                     checkout: jsvar4,
-                     checkin_g: jsvar5,
-                     checkin_tg: jsvar6,
-                     srv_code: jsvar7,
-                     amount: jsvar8
-                }
-        });
-
-        request.done( function ( data ) {
-                $('#myBtn').html( data );
-        });
-
-        request.fail( function ( jqXHR, textStatus) {
-                console.log( 'Sorry: ' + textStatus );
-        });
-
-}
-
-</script>
-<script>
-
-function imAnAjaxFunction(){
-
-	var jsvar = '<?php echo $booking_num;?>';
-	var jsvar1 = '<?php echo $srv_code;?>';
-	var jsvar2 = '<?php echo $numroom;?>';
-        var request = $.ajax({
-   		url: 'test.php',
-   		type: 'POST',
-   		dataType: 'html',
-                data:{
-                     booking_num: jsvar,
-                     srv_code: jsvar1,
-                     numroom: jsvar2
-                }
- 	});
-
-	request.done( function ( data ) {
- 		$('#myBtn').html( data );
- 	});
-
-	request.fail( function ( jqXHR, textStatus) {
- 		console.log( 'Sorry: ' + textStatus );
- 	});
-
-}
-
-</script>
   <script>
-//  function insertToDB(){
-//$(document).ready(function() {
-//$("#myBtn").click(function(){
-//     $.ajax({url: "test.php", type: "post"});
-// });
-//});
-//  }
-
   function goBack() {
     window.history.back();
   }
@@ -2711,8 +2545,6 @@ function imAnAjaxFunction(){
       if(inputtxt.value.match(vcardno) || inputtxt.value.match(mcardno))
       {
         modal.style.display = "block";
-	imAnAjaxFunction();
-        sendEmailConfirmation();
         return true;
       }
       else

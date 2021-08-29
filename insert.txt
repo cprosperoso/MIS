@@ -1,0 +1,1 @@
+INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (null, datetime('now'),'cprosperoso@yahoo.com','BRD','2021-05-07','2021-05-09',0,'small','130 Baht','fcWGOEr','CONF');

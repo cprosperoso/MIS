@@ -13,7 +13,7 @@ $booking_num=$_POST['booking_num'];
 
 $db = new SQLite3('park_city.db');
 
-$stmt=$db->prepare("select tr.booking_ref, tr.email, ps.service, tr.date_in, tr.date_out, tr.time_in, tr.amount, ts.transstat from transactions tr, pet_services ps, trans_status ts where tr.booking_ref=:booking_num and tr.service=ps.srv_code and tr.trans_stat=ts.transstat_code");
+$stmt=$db->prepare("select tr.booking_ref, tr.email, ps.service, tr.date_in, tr.date_out, tr.time_in, tr.amount, ts.transstat, usr.name from transactions tr, pet_services ps, trans_status ts, users usr where tr.booking_ref=:booking_num and tr.service=ps.srv_code and tr.trans_stat=ts.transstat_code and tr.email=usr.email");
 //$stmt=$db->prepare("select booking_ref, email from transactions where booking_ref=:booking_num");
 $stmt->bindValue(':booking_num', $booking_num);
 $result = $stmt->execute();

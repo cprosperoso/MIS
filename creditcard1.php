@@ -3,60 +3,37 @@ if (!session_id()) session_start();
 
 $booking_num=rand_code(7);
 
-$checkin = $_SESSION['checkin'];      //boarding
-$checkout = $_SESSION['checkout'];    //boarding
-$checkin_g = $_SESSION['checkin_g'];  //grooming
-$checkin_tg = $_SESSION['checkin_tg'];//grooming
-$numroom = $_SESSION['numroom'];
-$petsize = $_SESSION['petsize'];
-$p_type = $_SESSION['p_type'];
-$srv_code = $_SESSION['srv_code'];
-$est_amount = $_SESSION['est_amount'];
+$checkin = $_POST['checkin'];
+$checkout = $_POST['checkout'];
+$numroom = $_POST['numroom'];
+$petsize = $_POST['petsize'];
+$p_type = $_POST['p_type'];
+
 $username = $_SESSION['username'];
 
-//$booking_num1=$_POST['booking_num'];
-//$srv_code1=$_POST['srv_code'];
-/*print "check in: $checkin\n";
-print "check out: $checkout\n";
-print "checkin groom: $checkin_g\n";
-print "time groom: $checkin_tg\n";
-print "numroom: $numroom\n";
-print "petsize: $petsize\n";
-print "pettype: $p_type\n";
-print "srv_code: $srv_code\n";
-print "username: $username\n";
-print "booking: $booking_num\n";
-print "amount: $est_amount\n";*/
-
-//print "Here: $booking_num";
-//print "again: $srv_code";
 //computation
-/*$numOfDays = (strtotime($checkout) - strtotime($checkin)) / (60 * 60 * 24);
+$numOfDays = (strtotime($checkout) - strtotime($checkin)) / (60 * 60 * 24);
 switch (strtolower($petsize)){
 case "small":
-if($srv_code == "GRM")
 $est_amount = ($numroom*65 * $numOfDays);
-else
-$est_amount = 45*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p";
 break;
 case "medium":
-if($srv_code == "GRM")
 $est_amount = ($numroom*75 * $numOfDays);
-else
-$est_amount = 60*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
 break;
 default:
-if($srv_code == "GRM")
 $est_amount = ($numroom*85 * $numOfDays);
-else
-$est_amount = 65*1;
 //print "<p><b> Est. Amount:</b> ".$est_amount."\n</p>";
 }
 
-print "amount: $est_amount\n";
-*/
+$db = new SQLite3('park_city.db');
+
+$stmt = $db->prepare("SELECT email from users where username=:username");
+$stmt->bindValue(':username',$username);
+$result = $stmt->execute();
+//$stmt->bind_result($email);
+$row = $result->fetchArray();
 
 function rand_code($len)
 {
@@ -91,68 +68,7 @@ function rand_code($len)
  return $CodeEX;
 }
 
-$db = new SQLite3('park_city.db');
-
-//get user's email address
-$stmt = $db->prepare("SELECT email from users where username=:username");
-$stmt->bindValue(':username',$username);
-$result = $stmt->execute();
-$row = $result->fetchArray();
-$email = $row[email];
-
-//$i=0;
-//for ($i=1; $i<=$numroom; $i++){
-//do{
-//print "$numroom";
-//get room to assign
-if($srv_code == 'BRD'){
- for ($i=1; $i<=$numroom; $i++){
-  $stmt = $db->prepare("SELECT room_name FROM rooms WHERE room_sz=:petsize and status='VAC' order by room_name desc limit 1");
-  $stmt->bindValue(':petsize',$petsize);
-  //$stmt->bindValue(':numroom',$numroom);
-  $result = $stmt->execute();
-  $row = $result->fetchArray();
-  $aroom = $row[room_name];
-  //if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-  //update status of assigned room
-  $stmt=$db->prepare("UPDATE rooms SET status='HLD' WHERE room_name=:aroom");
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->execute();
-
-
-  //if($srv_code == 'BRD'){
-  $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (NULL, datetime('now'),:email,:srv_code,:checkin,:checkout,0,:aroom,:est_amount,:booking_num,'RES')");
-  $stmt->bindValue(':email',$email);
-  $stmt->bindValue(':srv_code',$srv_code);
-  $stmt->bindValue(':checkin',$checkin);
-  $stmt->bindValue(':checkout',$checkout);
-  $stmt->bindValue(':aroom',$aroom);
-  $stmt->bindValue(':petsize',strtolower($psize));
-  $stmt->bindValue(':est_amount',$est_amount);
-  $stmt->bindValue(':booking_num',$booking_num);
-  $stmt->execute();
-  $stmt->close();
- }
-}
-else{
- $stmt = $db->prepare("INSERT INTO transactions (id, trans_date, email, service, date_in, date_out, time_in, room, amount, booking_ref, trans_stat) VALUES (null, datetime('now'),:email,:srv_code,:checkin,0,:checkin_tg,:petsize,:est_amount,:booking_num,'RES')");
- $stmt->bindValue(':email',$email);
- $stmt->bindValue(':srv_code',$srv_code);
- $stmt->bindValue(':checkin',$checkin_g);
- $stmt->bindValue(':checkin_tg',$checkin_tg);
- $stmt->bindValue(':petsize',strtolower($psize));
- $stmt->bindValue(':est_amount',$est_amount);
- $stmt->bindValue(':booking_num',$booking_num);
- $stmt->execute(); 
- $stmt->close();
-}
-//}while($i<$numroom);
-$db->close();
-//}
-
 ?>
-
 <!DOCTYPE html>
 <html>
 
@@ -693,7 +609,7 @@ $db->close();
     }
 
     .c214 {
-      z-index: 10;
+      z-index: 7;
       pointer-events: auto
     }
 
@@ -729,12 +645,12 @@ $db->close();
     .ps210 {
       position: relative;
       margin-left: 155px;
-      margin-top: 5px
+      margin-top: 15px
     }
 
     .s255 {
-      min-width: 445px;
-      width: 445px;
+      min-width: 460px;
+      width: 460px;
       min-height: 35px
     }
 
@@ -745,13 +661,13 @@ $db->close();
     }
 
     .s256 {
-      min-width: 168px;
-      width: 168px;
+      min-width: 173px;
+      width: 173px;
       min-height: 35px
     }
 
     .c216 {
-      z-index: 7;
+      z-index: 9;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
@@ -759,7 +675,7 @@ $db->close();
 
     .ps212 {
       position: relative;
-      margin-left: 5px;
+      margin-left: 2px;
       margin-top: 0
     }
 
@@ -770,7 +686,7 @@ $db->close();
     }
 
     .c217 {
-      z-index: 8;
+      z-index: 11;
       pointer-events: auto;
       overflow: hidden;
       height: 35px
@@ -778,13 +694,13 @@ $db->close();
 
     .ps213 {
       position: relative;
-      margin-left: -2px;
+      margin-left: 5px;
       margin-top: 0
     }
 
     .s258 {
-      min-width: 107px;
-      width: 107px;
+      min-width: 113px;
+      width: 113px;
       min-height: 35px
     }
 
@@ -797,14 +713,14 @@ $db->close();
 
     .ps214 {
       position: relative;
-      margin-left: 153px;
+      margin-left: 158px;
       margin-top: 3px
     }
 
     .s259 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px
+      min-width: 442px;
+      width: 442px;
+      min-height: 53px
     }
 
     .s260 {
@@ -826,7 +742,7 @@ $db->close();
       border-radius: 0;
       background-color: #fff;
       background-clip: padding-box;
-      width: 171px;;
+      width: 171px;
       height: 27px;
       font-family: "Helvetica Neue", sans-serif;
       font-size: 12px;
@@ -850,13 +766,13 @@ $db->close();
 
     .ps215 {
       position: relative;
-      margin-left: 3px;
+      margin-left: 2px;
       margin-top: 0
     }
 
     .s261 {
-      min-width: 167px;
-      width: 167px;
+      min-width: 171px;
+      width: 171px;
       min-height: 27px;
       height: 27px
     }
@@ -873,7 +789,7 @@ $db->close();
       border-radius: 0;
       background-color: #fff;
       background-clip: padding-box;
-      width: 167px;
+      width: 171px;
       height: 27px;
       font-family: "Helvetica Neue", sans-serif;
       font-size: 12px;
@@ -897,15 +813,15 @@ $db->close();
 
     .ps216 {
       position: relative;
-      margin-left: 4px;
+      margin-left: 1px;
       margin-top: 0
     }
 
     .s262 {
-      min-width: 102px;
-      width: 102px;
-      min-height: 27px;
-      height: 27px
+      min-width: 97px;
+      width: 97px;
+      min-height: 53px;
+      height: 53px
     }
 
     .c221 {
@@ -920,8 +836,8 @@ $db->close();
       border-radius: 0;
       background-color: #fff;
       background-clip: padding-box;
-      width: 102px;
-      height: 27px;
+      width: 97px;
+      height: 53px;
       font-family: "Helvetica Neue", sans-serif;
       font-size: 12px;
       font-weight: 400;
@@ -934,7 +850,7 @@ $db->close();
       text-shadow: none;
       text-indent: 0;
       padding-bottom: 0;
-      text-align: center;
+      text-align: left;
       padding: 4px
     }
 
@@ -945,13 +861,7 @@ $db->close();
     .ps217 {
       position: relative;
       margin-left: 155px;
-      margin-top: 9px
-    }
-
-    .s263 {
-      min-width: 173px;
-      width: 173px;
-      min-height: 35px
+      margin-top: 7px
     }
 
     .c222 {
@@ -965,13 +875,6 @@ $db->close();
       position: relative;
       margin-left: 153px;
       margin-top: 6px
-    }
-
-    .s264 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px;
-      height: 27px
     }
 
     .c223 {
@@ -1010,90 +913,24 @@ $db->close();
 
     .ps219 {
       position: relative;
-      margin-left: 156px;
-      margin-top: -1px
-    }
-
-    .s265 {
-      min-width: 173px;
-      width: 173px;
-      min-height: 35px
-    }
-
-    .c224 {
-      z-index: 18;
-      pointer-events: auto;
-      overflow: hidden;
-      height: 35px
-    }
-
-    .ps220 {
-      position: relative;
-      margin-left: 154px;
-      margin-top: 6px
-    }
-
-    .s266 {
-      min-width: 447px;
-      width: 447px;
-      min-height: 27px;
-      height: 27px
-    }
-
-    .c225 {
-      z-index: 19;
-      pointer-events: auto
-    }
-
-    .input20 {
-      border: 1px solid #fff;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      background-color: #fff;
-      background-clip: padding-box;
-      width: 447px;
-      height: 27px;
-      font-family: "Helvetica Neue", sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      font-style: normal;
-      text-decoration: none;
-      text-transform: none;
-      color: #020202;
-      line-height: 14px;
-      letter-spacing: normal;
-      text-shadow: none;
-      text-indent: 0;
-      padding-bottom: 0;
-      text-align: left;
-      padding: 4px
-    }
-
-    .input20::placeholder {
-      color: rgb(169, 169, 169)
-    }
-
-    .ps221 {
-      position: relative;
       margin-left: 153px;
-      margin-top: 25px
+      margin-top: 43px
     }
 
-    .s267 {
+    .s263 {
       min-width: 447px;
       width: 447px;
       min-height: 40px
     }
 
-    .s268 {
+    .s264 {
       min-width: 207px;
       width: 207px;
       min-height: 40px
     }
 
-    .c226 {
-      z-index: 9;
+    .c224 {
+      z-index: 8;
       pointer-events: auto
     }
 
@@ -1144,20 +981,20 @@ $db->close();
       outline: 0
     }
 
-    .s269 {
+    .s265 {
       width: 205px;
       padding-right: 0;
-      height: auto
+      height: auto 
     }
 
-    .ps222 {
+    .ps220 {
       position: relative;
       margin-left: 33px;
       margin-top: 0
     }
 
-    .c227 {
-      z-index: 20;
+    .c225 {
+      z-index: 18;
       pointer-events: auto
     }
 
@@ -1287,18 +1124,18 @@ $db->close();
 
       .ps210 {
         margin-left: 124px;
-        margin-top: 3px
+        margin-top: 11px
       }
 
       .s255 {
-        min-width: 356px;
-        width: 356px;
+        min-width: 368px;
+        width: 368px;
         min-height: 28px
       }
 
       .s256 {
-        min-width: 134px;
-        width: 134px;
+        min-width: 138px;
+        width: 138px;
         min-height: 28px
       }
 
@@ -1306,13 +1143,9 @@ $db->close();
         height: 28px
       }
 
-      .ps212 {
-        margin-left: 4px
-      }
-
       .s257 {
-        min-width: 134px;
-        width: 134px;
+        min-width: 133px;
+        width: 133px;
         min-height: 28px
       }
 
@@ -1320,9 +1153,13 @@ $db->close();
         height: 28px
       }
 
+      .ps213 {
+        margin-left: 4px
+      }
+
       .s258 {
-        min-width: 86px;
-        width: 86px;
+        min-width: 91px;
+        width: 91px;
         min-height: 28px
       }
 
@@ -1331,13 +1168,13 @@ $db->close();
       }
 
       .ps214 {
-        margin-left: 122px
+        margin-left: 126px
       }
 
       .s259 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px
+        min-width: 354px;
+        width: 354px;
+        min-height: 42px
       }
 
       .s260 {
@@ -1348,57 +1185,51 @@ $db->close();
       }
 
       .input16 {
-        width: 171px;
+        width: 137px;
         height: 22px;
         font-size: 9px;
         line-height: 11px
       }
 
       .ps215 {
-        margin-left: 2px
+        margin-left: 1px
       }
 
       .s261 {
-        min-width: 134px;
-        width: 134px;
+        min-width: 138px;
+        width: 138px;
         min-height: 22px;
         height: 22px
       }
 
       .input17 {
-        width: 134px;
+        width: 138px;
         height: 22px;
         font-size: 9px;
         line-height: 11px
       }
 
       .ps216 {
-        margin-left: 3px
+        margin-left: 0
       }
 
       .s262 {
-        min-width: 82px;
-        width: 82px;
-        min-height: 22px;
-        height: 22px
+        min-width: 78px;
+        width: 78px;
+        min-height: 42px;
+        height: 42px
       }
 
       .input18 {
-        width: 82px;
-        height: 22px;
+        width: 78px;
+        height: 42px;
         font-size: 9px;
         line-height: 11px
       }
 
       .ps217 {
         margin-left: 124px;
-        margin-top: 7px
-      }
-
-      .s263 {
-        min-width: 138px;
-        width: 138px;
-        min-height: 28px
+        margin-top: 6px
       }
 
       .c222 {
@@ -1410,13 +1241,6 @@ $db->close();
         margin-top: 4px
       }
 
-      .s264 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px;
-        height: 22px
-      }
-
       .input19 {
         width: 358px;
         height: 22px;
@@ -1425,50 +1249,17 @@ $db->close();
       }
 
       .ps219 {
-        margin-left: 125px
-      }
-
-      .s265 {
-        min-width: 138px;
-        width: 138px;
-        min-height: 28px
-      }
-
-      .c224 {
-        height: 28px
-      }
-
-      .ps220 {
-        margin-left: 123px;
-        margin-top: 5px
-      }
-
-      .s266 {
-        min-width: 358px;
-        width: 358px;
-        min-height: 22px;
-        height: 22px
-      }
-
-      .input20 {
-        width: 358px;
-        height: 22px;
-        font-size: 9px;
-        line-height: 11px
-      }
-
-      .ps221 {
         margin-left: 122px;
-        margin-top: 19px
+        margin-top: 34px
       }
 
-      .s267 {
+      .s263 {
         min-width: 358px;
         width: 358px;
         min-height: 33px
       }
 
-      .s268 {
+      .s264 {
         min-width: 166px;
         width: 166px;
         min-height: 33px
@@ -1480,12 +1271,12 @@ $db->close();
         padding-bottom: 7px
       }
 
-      .s269 {
+      .s265 {
         width: 164px;
         height: 16px
       }
 
-      .ps222 {
+      .ps220 {
         margin-left: 26px
       }
     }
@@ -1594,18 +1385,18 @@ $db->close();
 
       .ps210 {
         margin-left: 77px;
-        margin-top: 1px
+        margin-top: 6px
       }
 
       .s255 {
-        min-width: 223px;
-        width: 223px;
+        min-width: 230px;
+        width: 230px;
         min-height: 18px
       }
 
       .s256 {
-        min-width: 84px;
-        width: 84px;
+        min-width: 86px;
+        width: 86px;
         min-height: 18px
       }
 
@@ -1613,13 +1404,9 @@ $db->close();
         height: 18px
       }
 
-      .ps212 {
-        margin-left: 2px
-      }
-
       .s257 {
-        min-width: 84px;
-        width: 84px;
+        min-width: 83px;
+        width: 83px;
         min-height: 18px
       }
 
@@ -1628,12 +1415,12 @@ $db->close();
       }
 
       .ps213 {
-        margin-left: -1px
+        margin-left: 2px
       }
 
       .s258 {
-        min-width: 54px;
-        width: 54px;
+        min-width: 57px;
+        width: 57px;
         min-height: 18px
       }
 
@@ -1642,14 +1429,14 @@ $db->close();
       }
 
       .ps214 {
-        margin-left: 76px;
+        margin-left: 78px;
         margin-top: 1px
       }
 
       .s259 {
-        min-width: 224px;
-        width: 224px;
-        min-height: 15px
+        min-width: 222px;
+        width: 222px;
+        min-height: 27px
       }
 
       .s260 {
@@ -1671,33 +1458,33 @@ $db->close();
       }
 
       .s261 {
-        min-width: 85px;
-        width: 85px;
+        min-width: 87px;
+        width: 87px;
         min-height: 15px;
         height: 15px
       }
 
       .input17 {
-        width: 85px;
+        width: 87px;
         height: 15px;
         font-size: 5px;
         line-height: 6px
       }
 
       .ps216 {
-        margin-left: 1px
+        margin-left: 0
       }
 
       .s262 {
-        min-width: 52px;
-        width: 52px;
-        min-height: 15px;
-        height: 15px
+        min-width: 49px;
+        width: 49px;
+        min-height: 27px;
+        height: 27px
       }
 
       .input18 {
-        width: 52px;
-        height: 15px;
+        width: 49px;
+        height: 27px;
         font-size: 5px;
         line-height: 6px
       }
@@ -1705,12 +1492,6 @@ $db->close();
       .ps217 {
         margin-left: 77px;
         margin-top: 4px
-      }
-
-      .s263 {
-        min-width: 86px;
-        width: 86px;
-        min-height: 17px
       }
 
       .c222 {
@@ -1722,13 +1503,6 @@ $db->close();
         margin-top: 2px
       }
 
-      .s264 {
-        min-width: 224px;
-        width: 224px;
-        min-height: 15px;
-        height: 15px
-      }
-
       .input19 {
         width: 224px;
         height: 15px;
@@ -1737,68 +1511,35 @@ $db->close();
       }
 
       .ps219 {
-        margin-left: 78px
-      }
-
-      .s265 {
-        min-width: 86px;
-        width: 86px;
-        min-height: 17px
-      }
-
-      .c224 {
-        height: 17px
-      }
-
-      .ps220 {
         margin-left: 76px;
-        margin-top: 3px
+        margin-top: 20px
       }
 
-      .s266 {
-        min-width: 225px;
-        width: 225px;
-        min-height: 15px;
-        height: 15px
-      }
-
-      .input20 {
-        width: 225px;
-        height: 15px;
-        font-size: 5px;
-        line-height: 6px
-      }
-
-      .ps221 {
-        margin-left: 76px;
-        margin-top: 11px
-      }
-
-      .s267 {
+      .s263 {
         min-width: 224px;
         width: 224px;
-        min-height: 21px
+        min-height: 22px
       }
 
-      .s268 {
+      .s264 {
         min-width: 104px;
         width: 104px;
-        min-height: 21px
+        min-height: 22px
       }
 
       .f55 {
         font-size: 8px;
         line-height: 10px;
         padding-top: 5px;
-        padding-bottom: 4px
+        padding-bottom: 5px
       }
 
-      .s269 {
+      .s265 {
         width: 102px;
         height: 10px
       }
 
-      .ps222 {
+      .ps220 {
         margin-left: 16px
       }
     }
@@ -1907,18 +1648,18 @@ $db->close();
 
       .ps210 {
         margin-left: 52px;
-        margin-top: 0
+        margin-top: 3px
       }
 
       .s255 {
-        min-width: 148px;
-        width: 148px;
+        min-width: 153px;
+        width: 153px;
         min-height: 12px
       }
 
       .s256 {
-        min-width: 56px;
-        width: 56px;
+        min-width: 57px;
+        width: 57px;
         min-height: 12px
       }
 
@@ -1941,12 +1682,12 @@ $db->close();
       }
 
       .ps213 {
-        margin-left: -1px
+        margin-left: 1px
       }
 
       .s258 {
-        min-width: 36px;
-        width: 36px;
+        min-width: 38px;
+        width: 38px;
         min-height: 12px
       }
 
@@ -1955,26 +1696,26 @@ $db->close();
       }
 
       .ps214 {
-        margin-left: 51px;
-        margin-top: 0
+        margin-left: 52px;
+        margin-top: 1px
       }
 
       .s259 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 11px
+        min-width: 149px;
+        width: 149px;
+        min-height: 18px
       }
 
       .s260 {
         min-width: 58px;
         width: 58px;
-        min-height: 11px;
-        height: 11px
+        min-height: 10px;
+        height: 10px
       }
 
       .input16 {
         width: 58px;
-        height: 11px;
+        height: 10px;
         font-size: 3px;
         line-height: 4px
       }
@@ -1984,50 +1725,44 @@ $db->close();
       }
 
       .s261 {
-        min-width: 57px;
-        width: 57px;
-        min-height: 11px;
-        height: 11px
+        min-width: 59px;
+        width: 59px;
+        min-height: 10px;
+        height: 10px
       }
 
       .input17 {
-        width: 57px;
-        height: 11px;
+        width: 59px;
+        height: 10px;
         font-size: 3px;
         line-height: 4px
       }
 
       .ps216 {
-        margin-left: 0
+        margin-left: -1px
       }
 
       .s262 {
-        min-width: 36px;
-        width: 36px;
-        min-height: 11px;
-        height: 11px
+        min-width: 34px;
+        width: 34px;
+        min-height: 18px;
+        height: 18px
       }
 
       .input18 {
-        width: 36px;
-        height: 11px;
+        width: 34px;
+        height: 18px;
         font-size: 3px;
         line-height: 4px
       }
 
       .ps217 {
         margin-left: 52px;
-        margin-top: 2px
-      }
-
-      .s263 {
-        min-width: 57px;
-        width: 57px;
-        min-height: 12px
+        margin-top: 3px
       }
 
       .c222 {
-        height: 12px
+        height: 11px
       }
 
       .ps218 {
@@ -2035,83 +1770,43 @@ $db->close();
         margin-top: 1px
       }
 
-      .s264 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 10px;
-        height: 10px
-      }
-
       .input19 {
-        width: 150px;
-        height: 10px;
-        font-size: 3px;
-        line-height: 4px
-      }
-
-      .ps219 {
-        margin-left: 52px
-      }
-
-      .s265 {
-        min-width: 58px;
-        width: 58px;
-        min-height: 12px
-      }
-
-      .c224 {
-        height: 12px
-      }
-
-      .ps220 {
-        margin-left: 51px;
-        margin-top: 1px
-      }
-
-      .s266 {
-        min-width: 150px;
-        width: 150px;
-        min-height: 11px;
-        height: 11px
-      }
-
-      .input20 {
         width: 150px;
         height: 11px;
         font-size: 3px;
         line-height: 4px
       }
 
-      .ps221 {
+      .ps219 {
         margin-left: 51px;
-        margin-top: 7px
+        margin-top: 12px
       }
 
-      .s267 {
+      .s263 {
         min-width: 150px;
         width: 150px;
-        min-height: 14px
+        min-height: 16px
       }
 
-      .s268 {
+      .s264 {
         min-width: 70px;
         width: 70px;
-        min-height: 14px
+        min-height: 16px
       }
 
       .f55 {
         font-size: 5px;
         line-height: 6px;
-        padding-top: 3px;
-        padding-bottom: 3px
+        padding-top: 4px;
+        padding-bottom: 4px
       }
 
-      .s269 {
+      .s265 {
         width: 68px;
         height: 6px
       }
 
-      .ps222 {
+      .ps220 {
         margin-left: 10px
       }
     }
@@ -2473,7 +2168,6 @@ $db->close();
       color: white;
       font-size: 24px;
     }
-
   </style>
   <script>
     ! function() {
@@ -2483,15 +2177,15 @@ $db->close();
       }, A.src = "data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAD8D+JaQAA3AA/ua1AAA"
     }();
   </script>
-  <link onload="this.media='all';this.onload=null;" rel="stylesheet" href="css/site.9541f8.css" media="print">
+  <link onload="this.media='all';this.onload=null;" rel="stylesheet" href="css/site.eb1fc6.css" media="print">
   <!--[if lte IE 7]>
-<link rel="stylesheet" href="css/site.9541f8-lteIE7.css" type="text/css">
+<link rel="stylesheet" href="css/site.eb1fc6-lteIE7.css" type="text/css">
 <![endif]-->
   <!--[if lte IE 8]>
-<link rel="stylesheet" href="css/site.9541f8-lteIE8.css" type="text/css">
+<link rel="stylesheet" href="css/site.eb1fc6-lteIE8.css" type="text/css">
 <![endif]-->
   <!--[if gte IE 9]>
-<link rel="stylesheet" href="css/site.9541f8-gteIE9.css" type="text/css">
+<link rel="stylesheet" href="css/site.eb1fc6-gteIE9.css" type="text/css">
 <![endif]-->
 </head>
 
@@ -2502,24 +2196,23 @@ $db->close();
   <div class="ps205 v26 s248">
     <div class="s249">
       <div class="v25 ps206 s250 c210">
-      <!--form class="v25 ps206 s250 c210" action="email_confirm.php" method="POST"-->
         <div class="c211 s251">
         </div>
         <div class="v25 ps207 s252 c212">
-          <p class="p14 f53">Confirm Booking</p>
+          <p class="p14 f53">confirm booking</p>
         </div>
         <div class="v25 ps208 s253 c213">
           <p class="p15 f54">Card number*</p>
         </div>
         <div class="v25 ps209 s254 c214">
-          <input id="cc_number" type="text" name="cc_number" class="input15">
+          <input type="text" name="text" class="input15">
         </div>
         <div class="v25 ps210 s255 c215">
           <div class="v25 ps211 s256 c216">
-            <p class="p15 f54">Card Expiration*</p>
+            <p class="p15 f54">Expiration Month*</p>
           </div>
           <div class="v25 ps212 s257 c217">
-            <!--p class="p15 f54">Expiration Year*</p-->
+            <p class="p15 f54">Expiration Year*</p>
           </div>
           <div class="v25 ps213 s258 c218">
             <p class="p15 f54">Security Code*</p>
@@ -2527,44 +2220,31 @@ $db->close();
         </div>
         <div class="v25 ps214 s259 c215">
           <div class="v25 ps211 s260 c219">
-            <input id="cc_exp" type="month" name="cc_exp" class="input16">
+            <input type="text" name="text" class="input16">
           </div>
           <div class="v25 ps215 s261 c220">
-            <!--input type="text" name="text" class="input17"-->
+            <input type="text" name="text" class="input17">
           </div>
           <div class="v25 ps216 s262 c221">
-            <input id="sec_code" type="text" name="sec_code" class="input18">
+            <input type="text" name="text" class="input18">
           </div>
         </div>
-        <div class="v25 ps217 s263 c222">
+        <div class="v25 ps217 s253 c222">
           <p class="p15 f54">Name on card*</p>
         </div>
-        <div class="v25 ps218 s264 c223">
-          <input id="cc_name" type="text" name="cc_name" class="input19">
+        <div class="v25 ps218 s254 c223">
+          <input type="text" name="text" class="input19">
         </div>
-        <div class="v25 ps219 s265 c224">
-          <p class="p15 f54">Email*</p>
-        </div>
-        <div class="v25 ps220 s266 c225">
-          <!--input type="text" name="text" class="input20"-->
-<?php if(isset($_SESSION['username'])):?>
-<input id="email" type="text" name="text" class="input20" value=<?php echo $email;?>>
-<?php else:?>
-<input type="text" name="text" class="input20">
-<?php endif;?>
-        </div>
-        <div class="v25 ps221 s267 c215">
-          <div class="v25 ps211 s268 c226">
-            <!--a href="services.php" class="f55 btn25 v27 s269">&lt;&lt; Back</a-->
-            <button onclick="goBack()" id="myBtnBack" class="f55 btn25 v27 s269">&lt;&lt; Back</button>
+        <div class="v25 ps219 s263 c215">
+          <div class="v25 ps211 s264 c224">
+            <a href="services.php" class="f55 btn25 v27 s265">&lt;&lt; Back</a>
           </div>
-          <div class="v25 ps222 s268 c227">
-            <!--a href="./" class="f55 btn26 v27 s269">Confirm Booking &gt;&gt;</a-->
-            <button onclick="myFunction()" id="myBtn" class="f55 btn26 v27 s269">Confirm Booking &gt;&gt;</button>
+          <div class="v25 ps220 s264 c225">
+            <!--a href="./" id="myBtn" class="fA55 btn26 v27 s265">Confirm Booking &gt;&gt;</a-->
+            <button onclick="myFunction()" id="myBtn" class="f55 btn26 v27 s265">Confirm Booking &lt;&lt;</button>
           </div>
         </div>
       </div>
-      <!--/form-->
     </div>
   </div>
   <div class="v1 ps172 s158 c206"></div>
@@ -2596,7 +2276,7 @@ $db->close();
   <script>
     dpth = "/";
     ! function() {
-      var s = ["js/jquery.c71cd4.js", "js/creditcard.9541f8.js"],
+      var s = ["js/jquery.c71cd4.js", "js/creditcard.eb1fc6.js"],
         n = {},
         j = 0,
         e = function(e) {
@@ -2618,131 +2298,7 @@ $db->close();
       document.getElementsByTagName('body')[0].className += ' whitespacefix';
     }
   </script>
-
-<script>
-function sendEmailConfirmation(){
-
-        var jsvar = '<?php echo $booking_num;?>';
-        var jsvar1 = '<?php echo $email;?>';
-        var jsvar2 = '<?php echo $username;?>';
-        var jsvar3 = '<?php echo $checkin;?>';
-        var jsvar4 = '<?php echo $checkout;?>';
-        var jsvar5 = '<?php echo $checkin_g;?>';
-        var jsvar6 = '<?php echo $checkin_tg;?>';
-        var jsvar7 = '<?php echo $srv_code;?>';
-        var jsvar8 = '<?php echo $est_amount;?>';
- 
- 
-        var request = $.ajax({
-                url: 'email_confirm.php',
-                type: 'POST',
-                dataType: 'html',
-                data:{
-                     booking_num: jsvar,
-                     emailadd: jsvar1,
-                     username: jsvar2,
-                     checkin: jsvar3,
-                     checkout: jsvar4,
-                     checkin_g: jsvar5,
-                     checkin_tg: jsvar6,
-                     srv_code: jsvar7,
-                     amount: jsvar8
-                }
-        });
-
-        request.done( function ( data ) {
-                $('#myBtn').html( data );
-        });
-
-        request.fail( function ( jqXHR, textStatus) {
-                console.log( 'Sorry: ' + textStatus );
-        });
-
-}
-
-</script>
-<script>
-
-function imAnAjaxFunction(){
-
-	var jsvar = '<?php echo $booking_num;?>';
-	var jsvar1 = '<?php echo $srv_code;?>';
-	var jsvar2 = '<?php echo $numroom;?>';
-        var request = $.ajax({
-   		url: 'test.php',
-   		type: 'POST',
-   		dataType: 'html',
-                data:{
-                     booking_num: jsvar,
-                     srv_code: jsvar1,
-                     numroom: jsvar2
-                }
- 	});
-
-	request.done( function ( data ) {
- 		$('#myBtn').html( data );
- 	});
-
-	request.fail( function ( jqXHR, textStatus) {
- 		console.log( 'Sorry: ' + textStatus );
- 	});
-
-}
-
-</script>
   <script>
-//  function insertToDB(){
-//$(document).ready(function() {
-//$("#myBtn").click(function(){
-//     $.ajax({url: "test.php", type: "post"});
-// });
-//});
-//  }
-
-  function goBack() {
-    window.history.back();
-  }
-
-  function cardnumber(inputtxt)
-  {
-    var vcardno = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-    var mcardno = /^(?:5[1-5][0-9]{14})$/;
-    if (checkCardFields()){
-      if(inputtxt.value.match(vcardno) || inputtxt.value.match(mcardno))
-      {
-        modal.style.display = "block";
-	imAnAjaxFunction();
-        sendEmailConfirmation();
-        return true;
-      }
-      else
-      {
-        alert("Not a valid Mastercard/Visa credit card number!");
-        return false;
-      }
-    }
-    else{
-      alert("Please check the required fields!");
-    }
-  }
-
-  function checkCardFields()
-  {
-    var cc_number = document.getElementById('cc_number').value;
-    var cc_exp = document.getElementById('cc_exp').value;
-    var sec_code = document.getElementById('sec_code').value;
-    var cc_name = document.getElementById('cc_name').value;
-
-    if(cc_number && cc_exp && sec_code && cc_name)
-      {
-        return true;
-      }
-      else
-      {
-          return false;
-      }
-  }
-
   // Get the modal
   var modal = document.getElementById("myModal");
 
@@ -2754,7 +2310,7 @@ function imAnAjaxFunction(){
 
   // When the user clicks the button, open the modal
   btn.onclick = function() {
-    cardnumber(document.getElementById("cc_number"));
+    modal.style.display = "block";
   }
 
   // When the user clicks on <span> (x), close the modal
@@ -2771,4 +2327,5 @@ function imAnAjaxFunction(){
   }
   </script>
 </body>
+
 </html>

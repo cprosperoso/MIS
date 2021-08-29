@@ -28,7 +28,7 @@ $email = 'cprosperoso@yahoo.com';
      $mail->msgHTML($message);
      $mail->AltBody = strip_tags($message);
      $mail->send();
-      print "Thank you for your inquiry, we will get back to you shortly.";
+      echo "Thank you for your inquiry, we will get back to you shortly.";
      }
      catch (phpmailerException $e) {
        print $e->errorMessage(); //
